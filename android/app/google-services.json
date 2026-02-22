@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "52681180747",
+    "project_id": "employeecemtacfacedetection",
+    "storage_bucket": "employeecemtacfacedetection.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:52681180747:android:bf630d67a956ed0edbefce",
+        "android_client_info": {
+          "package_name": "com.cninfotech.digitalhrs"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAe-o2eNyGbuqbCvmK7Pwmmd8YFs0vdur0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

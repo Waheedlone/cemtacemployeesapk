@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "329791479566",
+    "project_id": "workermodelcemtacbiomatric",
+    "storage_bucket": "workermodelcemtacbiomatric.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:329791479566:android:25e224fbedbc7eed3c415f",
+        "android_client_info": {
+          "package_name": "com.cemtacbiomatric.cemtac"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJLHi8wmfsg037TteijTD20Fr1oyOwkJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

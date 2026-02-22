@@ -1,0 +1,66 @@
+class Data {
+  String address;
+  String avatar;
+  String branch;
+  String department;
+  String dob;
+  String employment_type;
+  String gender;
+  String joining_date;
+  String name;
+  String phone;
+  String post;
+  String user_type;
+  String username;
+
+  Data(
+      {required this.address,
+      required this.avatar,
+      required this.branch,
+      required this.department,
+      required this.dob,
+      required this.employment_type,
+      required this.gender,
+      required this.joining_date,
+      required this.name,
+      required this.phone,
+      required this.post,
+      required this.user_type,
+      required this.username});
+
+  factory Data.fromJson(Map<String, dynamic> json) {
+    return Data(
+      address: json['address'].toString(),
+      avatar: json['avatar'].toString(),
+      branch: json['branch'].toString(),
+      department: json['department'].toString(),
+      dob: json['dob'].toString(),
+      employment_type: json['employment_type'].toString(),
+      gender: json['gender'].toString(),
+      joining_date: json['joining_date'].toString(),
+      name: json['name'].toString(),
+      phone: json['phone'].toString(),
+      post: json['post'].toString(),
+      user_type: json['user_type'].toString(),
+      username: json['username'].toString(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['address'] = this.address;
+    data['avatar'] = this.avatar;
+    data['branch'] = this.branch;
+    data['department'] = this.department;
+    data['dob'] = this.dob;
+    data['employment_type'] = this.employment_type;
+    data['gender'] = this.gender;
+    data['joining_date'] = this.joining_date;
+    data['name'] = this.name;
+    data['phone'] = this.phone;
+    data['post'] = this.post;
+    data['user_type'] = this.user_type;
+    data['username'] = this.username;
+    return data;
+  }
+}
