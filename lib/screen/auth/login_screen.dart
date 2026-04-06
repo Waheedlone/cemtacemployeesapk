@@ -6,6 +6,7 @@ import 'package:flutter_web_browser/flutter_web_browser.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cnattendance/screen/auth/face_registration_screen.dart';
 import 'package:cnattendance/utils/firestore_service.dart';
+import 'package:cnattendance/provider/prefprovider.dart';
 import 'package:provider/provider.dart';
 import 'package:hexcolor/hexcolor.dart';
 
@@ -74,6 +75,7 @@ class loginScreenState extends State<LoginScreen> {
 
       if (faceData == null) {
         // Redirect to Face Registration if not registered
+        Provider.of<PrefProvider>(context, listen: false).saveFaceRegistered(false);
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => FaceRegistrationScreen(
             username: _usernameController.text,
@@ -82,6 +84,8 @@ class loginScreenState extends State<LoginScreen> {
         ));
         return;
       }
+
+      Provider.of<PrefProvider>(context, listen: false).saveFaceRegistered(true);
 
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(response.message)));

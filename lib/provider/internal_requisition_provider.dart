@@ -33,12 +33,17 @@ class InternalRequisitionProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = responseData['data'];
-        if (data is Map && data['data'] is List) {
-          _requisitions = (data['data'] as List)
-              .map((item) => InternalRequisition.fromJson(item))
-              .toList();
-        } else if (data is List) {
-          _requisitions = data.map((item) => InternalRequisition.fromJson(item)).toList();
+        if (data != null) {
+          if (data is Map && data['data'] is List) {
+            _requisitions = (data['data'] as List)
+                .map((item) => InternalRequisition.fromJson(item))
+                .toList();
+          } else if (data is List) {
+            _requisitions =
+                data.map((item) => InternalRequisition.fromJson(item)).toList();
+          } else {
+            _requisitions = [];
+          }
         } else {
           _requisitions = [];
         }
@@ -66,11 +71,14 @@ class InternalRequisitionProvider with ChangeNotifier {
 
     try {
       final response = await Connect().getResponse(
-          "${Constant.INTERNAL_REQUISITIONS_FOR_APPROVAL}/$id", headers);
+          "${Constant.INTERNAL_REQUISITIONS_DETAIL_URL}/$id", headers);
 
       final responseData = json.decode(response.body);
 
       if (response.statusCode == 200) {
+        if (responseData['data'] == null) {
+          throw 'Requisition detail not found';
+        }
         return InternalRequisition.fromJson(responseData['data']);
       } else {
         throw responseData['message'] ?? 'Failed to load requisition detail';
@@ -93,7 +101,7 @@ class InternalRequisitionProvider with ChangeNotifier {
 
     try {
       final response = await Connect().postResponse(
-          "${Constant.INTERNAL_REQUISITIONS_APPROVE}/$id/approve", headers, {});
+          "${Constant.INTERNAL_REQUISITIONS_APPROVE_ALL_URL}/$id/approve", headers, jsonEncode({}));
 
       final responseData = json.decode(response.body);
 
@@ -125,7 +133,7 @@ class InternalRequisitionProvider with ChangeNotifier {
 
     try {
       final response = await Connect().postResponse(
-          "${Constant.INTERNAL_REQUISITIONS_REJECT}/$id/reject", headers, body);
+          "${Constant.INTERNAL_REQUISITIONS_REJECT}/$id/reject", headers, jsonEncode(body));
 
       final responseData = json.decode(response.body);
 

@@ -13,6 +13,7 @@ import 'package:cnattendance/data/source/datastore/preferences.dart';
 import 'package:cnattendance/screen/auth/face_registration_screen.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:provider/provider.dart';
+import 'package:cnattendance/provider/dashboardprovider.dart';
 import 'package:cnattendance/widget/morescreen/createissuesheet.dart';
 
 class Services extends StatelessWidget {
@@ -43,6 +44,13 @@ class Services extends StatelessWidget {
           if (name == 'Privacy Policy') {
             openBrowserTab();
           } else if (name == 'Log Out') {
+            final dashboardProvider = Provider.of<DashboardProvider>(context, listen: false);
+            if (dashboardProvider.isCheckIn) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Please check out before logging out.')));
+              return;
+            }
+
             showModalBottomSheet(
                 context: context,
                 useRootNavigator: true,

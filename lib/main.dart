@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:cnattendance/utils/ssl_helper.dart';
 
-// import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cnattendance/data/source/datastore/preferences.dart';
 import 'package:cnattendance/model/auth.dart';
 import 'package:cnattendance/provider/attendancereportprovider.dart';
@@ -13,6 +13,7 @@ import 'package:cnattendance/provider/meetingprovider.dart';
 import 'package:cnattendance/provider/morescreenprovider.dart';
 import 'package:cnattendance/provider/notificationprovider.dart';
 import 'package:cnattendance/provider/shifthandoverprovider.dart';
+import 'package:cnattendance/provider/operationprovider.dart';
 import 'package:cnattendance/provider/overtimeprovider.dart';
 import 'package:cnattendance/provider/internal_requisition_provider.dart';
 import 'package:cnattendance/provider/payslipprovider.dart';
@@ -41,12 +42,12 @@ import 'package:cnattendance/screen/splashscreen.dart';
 import 'package:cnattendance/utils/face_service.dart';
 import 'package:cnattendance/utils/navigationservice.dart';
 import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
-// import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -80,38 +81,32 @@ void main() async {
   final faceService = FaceService(interpreter: tfliteService.interpreter);
 
   // No FCM for web yet
-  /*if (!kIsWeb) {
-    AwesomeNotifications().initialize(
-        'resource://drawable/app_icon',
-        [
-          NotificationChannel(
-            channelGroupKey: 'digital_hr_group',
-            channelKey: 'digital_hr_channel',
-            channelName: 'Digital HR Notifications',
-            channelDescription: 'HR alerts, leave updates, and gate pass status',
-            defaultColor: Color(0xFFED1C24),
-            ledColor: Color(0xFFED1C24),
-            importance: NotificationImportance.High,
-            defaultRingtoneType: DefaultRingtoneType.Notification,
-            playSound: true,
-            enableVibration: true,
-            enableLights: true,
-          ),
-        ],
-        channelGroups: [
-          NotificationChannelGroup(
-            channelGroupKey: 'digital_hr_group',
-            channelGroupName: 'HR Group',
-          ),
-        ],
-        debug: true);
+  if (!kIsWeb) {
+    await NotificationService.initialize();
+
+    // Request permissions for FCM
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      criticalAlert: true,
+      sound: true,
+    );
 
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
       if (!isAllowed) {
         AwesomeNotifications().requestPermissionToSendNotifications();
       }
     });
-  }*/
+
+    AwesomeNotifications().setListeners(
+      onActionReceivedMethod: NotificationService.onActionReceivedMethod,
+      onNotificationCreatedMethod: NotificationService.onNotificationCreatedMethod,
+      onNotificationDisplayedMethod: NotificationService.onNotificationDisplayedMethod,
+      onDismissActionReceivedMethod: NotificationService.onDismissActionReceivedMethod,
+    );
+
+    FirebaseMessaging.onBackgroundMessage(_messageHandler);
+  }
 
   // Firebase Messaging handlers disabled for web
 
@@ -126,11 +121,11 @@ void main() async {
 }
 
 /// Top-level background message handler.
-/*
 @pragma('vm:entry-point')
 Future<void> _messageHandler(RemoteMessage message) async {
   // Ensure Flutter bindings are initialised for this isolate
   WidgetsFlutterBinding.ensureInitialized();
+  print("Background message received: ${message.messageId}");
 
   // Initialise Firebase in this isolate if needed
   try {
@@ -139,17 +134,27 @@ Future<void> _messageHandler(RemoteMessage message) async {
         options: DefaultFirebaseOptions.currentPlatform,
       );
     }
+    // Also initialize AwesomeNotifications in this isolate
+    await NotificationService.initialize();
+
+    AwesomeNotifications().setListeners(
+      onActionReceivedMethod: NotificationService.onActionReceivedMethod,
+      onNotificationCreatedMethod: NotificationService.onNotificationCreatedMethod,
+      onNotificationDisplayedMethod: NotificationService.onNotificationDisplayedMethod,
+      onDismissActionReceivedMethod: NotificationService.onDismissActionReceivedMethod,
+    );
   } catch (e) {
-    print("Background Firebase initialization error: $e");
+    print("Background Firebase/Notification initialization error: $e");
   }
 
   // Show a heads-up system notification with sound using AwesomeNotifications
+  // Note: NotificationService handles the AwesomeNotifications call
   await NotificationService.showFromFCM(
-    title: message.notification?.title ?? 'Digital HR',
-    body: message.notification?.body ?? 'You have a new notification',
+    title: message.notification?.title ?? message.data['title'] ?? 'Digital HR',
+    body: message.notification?.body ?? message.data['body'] ?? 'You have a new notification',
+    payload: message.data.map((key, value) => MapEntry(key, value.toString())),
   );
 }
-*/
 
 void configLoading() {
   EasyLoading.instance
@@ -235,6 +240,9 @@ class MyApp extends StatelessWidget {
           ),
           ChangeNotifierProvider(
             create: (ctx) => SubstitutionProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (ctx) => OperationProvider(),
           ),
         ],
         child: Portal(

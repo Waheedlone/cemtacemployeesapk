@@ -15,9 +15,11 @@ import 'package:cnattendance/data/source/datastore/preferences.dart';
 class LeaveProvider with ChangeNotifier {
   final List<Leave> _leaveList = [];
   final List<LeaveDetail> _leaveDetailList = [];
+  final List<LeaveDetail> _leaveForConfirmationList = [];
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;
+  List<LeaveDetail> get leaveForConfirmationList => _leaveForConfirmationList;
 
   var _selectedMonth = 0;
   var _selectedType = 0;
@@ -257,6 +259,77 @@ class LeaveProvider with ChangeNotifier {
     } catch (error) {
       debugPrint(error.toString());
       throw error;
+    }
+  }
+
+  Future<void> fetchLeaveForConfirmation() async {
+    _isLoading = true;
+    notifyListeners();
+
+    Preferences preferences = Preferences();
+    String token = await preferences.getToken();
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer $token'
+    };
+
+    try {
+      final response = await Connect().getResponse(Constant.LEAVE_FOR_CONFIRMATION_URL, headers);
+      final responseData = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = responseData['data'];
+        _leaveForConfirmationList.clear();
+        for (var item in data) {
+          _leaveForConfirmationList.add(LeaveDetail(
+            id: item['id'],
+            name: item['leave_type_name'],
+            leave_from: item['leave_from'],
+            leave_to: item['leave_to'],
+            requested_date: item['leave_requested_date'],
+            authorization: item['status_updated_by'] ?? "Pending",
+            status: item['status'],
+          ));
+        }
+      }
+    } catch (e) {
+      debugPrint("Error fetching leave for confirmation: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<IssueLeaveResponse> confirmLeave(int id, String status, String remarks) async {
+    var url = "${Constant.LEAVE_CONFIRM_URL}/$id/confirm";
+
+    Preferences preferences = Preferences();
+    String token = await preferences.getToken();
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer $token'
+    };
+
+    Map<String, String> body = {
+      'status': status,
+      'remarks': remarks,
+    };
+
+    try {
+      final response = await Connect().postResponse(url, headers, json.encode(body));
+      final responseData = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        return IssueLeaveResponse.fromJson(responseData);
+      } else {
+        throw responseData['message'];
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 }

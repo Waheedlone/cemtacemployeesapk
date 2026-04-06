@@ -11,6 +11,8 @@ class InternalRequisition {
   final String? approvedByName;
   final String? approvedAt;
   final String createdAt;
+  final String? specialRequestReason;
+  final String? warehouseName;
   final List<RequisitionItem> items;
 
   InternalRequisition({
@@ -26,6 +28,8 @@ class InternalRequisition {
     this.approvedByName,
     this.approvedAt,
     required this.createdAt,
+    this.specialRequestReason,
+    this.warehouseName,
     this.items = const [],
   });
 
@@ -37,17 +41,19 @@ class InternalRequisition {
 
     return InternalRequisition(
       id: json['id'] ?? 0,
-      requestNo: json['request_no'] ?? '',
+      requestNo: json['ir_number'] ?? json['request_no'] ?? '',
       requestedById: json['requested_by_id'] ?? 0,
-      requestedByName: json['requested_by_name'] ?? '',
-      department: json['department'] ?? '',
-      requestDate: json['request_date'] ?? '',
-      priority: json['priority'] ?? '',
+      requestedByName: json['section_head_name'] ?? json['requested_by_name'] ?? '',
+      department: json['department_name'] ?? json['department'] ?? '',
+      requestDate: json['requisition_date'] ?? json['request_date'] ?? '',
+      priority: json['priority'] ?? json['type'] ?? '',
       status: json['status'] ?? '',
       remarks: json['remarks'],
       approvedByName: json['approved_by_name'],
       approvedAt: json['approved_at'],
       createdAt: json['created_at'] ?? '',
+      specialRequestReason: json['special_request_reason'],
+      warehouseName: json['warehouse_name'],
       items: items,
     );
   }
@@ -68,9 +74,9 @@ class RequisitionItem {
 
   factory RequisitionItem.fromJson(Map<String, dynamic> json) {
     return RequisitionItem(
-      itemId: json['item_id'] ?? 0,
-      itemName: json['item_name'] ?? '',
-      quantity: json['quantity'] ?? 0,
+      itemId: json['id'] ?? json['item_id'] ?? 0,
+      itemName: json['description'] ?? json['item_name'] ?? json['material_name'] ?? '',
+      quantity: (json['quantity'] ?? 0).toInt(),
       unit: json['unit'] ?? '',
     );
   }

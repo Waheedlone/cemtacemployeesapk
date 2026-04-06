@@ -33,6 +33,9 @@ class DashboardProvider with ChangeNotifier {
     'gate_pass': '0',
     'total_task': '0',
     'internal_requisition': '0',
+    'substitution': '0',
+    'shift_handover': '0',
+    'overtime': '0',
   };
 
   final Map<String, double> locationStatus = {
@@ -48,7 +51,8 @@ class DashboardProvider with ChangeNotifier {
     'check-in': '-',
     'check-out': '-',
     'production_hour': '0 hr 0 min ',
-    'production-time': 0.0
+    'production-time': 0.0,
+    'production_time_min': 0,
   };
 
   Map<String, dynamic> get attendanceList {
@@ -60,8 +64,16 @@ class DashboardProvider with ChangeNotifier {
   bool get isCheckIn {
     final lastCheckIn = _attendanceList['check-in'];
     final lastCheckOut = _attendanceList['check-out'];
-    bool hasCheckedIn = lastCheckIn != null && lastCheckIn != '-';
-    bool hasCheckedOut = lastCheckOut != null && lastCheckOut != '-';
+
+    bool hasCheckedIn = lastCheckIn != null &&
+        lastCheckIn.toString().trim() != '-' &&
+        lastCheckIn.toString().trim() != '' &&
+        lastCheckIn.toString().trim().toLowerCase() != 'null';
+    bool hasCheckedOut = lastCheckOut != null &&
+        lastCheckOut.toString().trim() != '-' &&
+        lastCheckOut.toString().trim() != '' &&
+        lastCheckOut.toString().trim().toLowerCase() != 'null';
+
     return hasCheckedIn && !hasCheckedOut;
   }
 
@@ -187,7 +199,19 @@ class DashboardProvider with ChangeNotifier {
         (value) => calculateHourText(employeeTodayAttendance.productionTime));
     _attendanceList.update(
         'check-in', (value) => employeeTodayAttendance.checkInAt);
+    _attendanceList.update(
+        'production_time_min', (value) => employeeTodayAttendance.productionTime);
 
+    Preferences().saveAttendanceStatus(
+        employeeTodayAttendance.checkInAt, employeeTodayAttendance.checkOutAt);
+
+    notifyListeners();
+  }
+
+  Future<void> loadAttendanceStatus() async {
+    final status = await Preferences().getAttendanceStatus();
+    _attendanceList.update('check-in', (value) => status['check-in']);
+    _attendanceList.update('check-out', (value) => status['check-out']);
     notifyListeners();
   }
 
@@ -205,6 +229,12 @@ class DashboardProvider with ChangeNotifier {
         'total_task', (value) => overview.total_pending_tasks.toString());
     _overviewList.update('internal_requisition',
         (value) => overview.total_internal_requisitions.toString());
+    _overviewList.update(
+        'substitution', (value) => overview.total_substitutions.toString());
+    _overviewList.update('shift_handover',
+        (value) => overview.total_shift_handovers.toString());
+    _overviewList.update(
+        'overtime', (value) => overview.total_overtimes.toString());
 
     notifyListeners();
   }

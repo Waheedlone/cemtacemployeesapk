@@ -54,7 +54,7 @@ class LogOutBottomSheetState extends State<LogOutBottomSheet> {
   void showLoader() {
     setState(() {
       EasyLoading.show(
-          status: "We are taking your Current  Shift , Please Wait..",
+          status: "Logging out, Please Wait..",
           maskType: EasyLoadingMaskType.black);
     });
   }
@@ -76,12 +76,12 @@ class LogOutBottomSheetState extends State<LogOutBottomSheet> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              'Shift Handover',
+              'Log Out',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 15),
             Text(
-              'Are you sure you want to Handover The Shift?',
+              'Are you sure you want to log out once you logout you must contact admin for login',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),

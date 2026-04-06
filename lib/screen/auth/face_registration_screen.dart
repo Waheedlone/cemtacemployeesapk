@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:cnattendance/screen/dashboard/dashboard_screen.dart';
+import 'package:cnattendance/provider/prefprovider.dart';
 import 'package:cnattendance/utils/face_service.dart';
 import 'package:cnattendance/utils/firestore_service.dart';
 import 'package:flutter/material.dart';
@@ -127,6 +128,8 @@ class _FaceRegistrationScreenState extends State<FaceRegistrationScreen> {
       print("DEBUG: Saving embeddings to Firestore for user: ${widget.username}");
       await _firestoreService.saveUserFace(widget.username, widget.password, embeddings);
       print("DEBUG: Firestore save successful");
+
+      Provider.of<PrefProvider>(context, listen: false).saveFaceRegistered(true);
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Face Registered Successfully!")));
       

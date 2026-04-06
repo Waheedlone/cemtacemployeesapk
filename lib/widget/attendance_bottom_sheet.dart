@@ -109,8 +109,14 @@ class AttendanceBottomSheetState extends State<AttedanceBottomSheet> {
     final lastCheckIn = provider.attendanceList['check-in'];
     final lastCheckOut = provider.attendanceList['check-out'];
 
-    bool hasCheckedIn = lastCheckIn != null && lastCheckIn != '-';
-    bool hasCheckedOut = lastCheckOut != null && lastCheckOut != '-';
+    bool hasCheckedIn = lastCheckIn != null &&
+        lastCheckIn != '-' &&
+        lastCheckIn != '' &&
+        lastCheckIn != 'null';
+    bool hasCheckedOut = lastCheckOut != null &&
+        lastCheckOut != '-' &&
+        lastCheckOut != '' &&
+        lastCheckOut != 'null';
 
     Widget button = const SizedBox.shrink();
     if (!hasCheckedIn) {

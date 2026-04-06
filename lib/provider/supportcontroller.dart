@@ -50,7 +50,7 @@ class SupportController extends GetxController {
           status: 'Submitting, Please Wait...',
           maskType: EasyLoadingMaskType.black);
       final response = await Connect().postResponse(uri.toString(), headers, {
-        "title": title,
+        "subject": title,
         "description": description,
         "department_id": selected.value.id.toString()
       });

@@ -76,48 +76,38 @@ class TadaRepository {
 
   Future<IssueLeaveResponse> createTada(String title, String description,
       String expenses, List<PlatformFile> fileList) async {
-    var uri = Uri.parse(Constant.TADA_STORE_URL);
-
     Preferences preferences = Preferences();
     String token = await preferences.getToken();
 
     Map<String, String> headers = {
       'Accept': 'application/json; charset=UTF-8',
-      'Content-type': 'multipart/form-data',
       'Authorization': 'Bearer $token'
     };
 
-    var requests = http.MultipartRequest('POST', uri);
-    requests.headers.addAll(headers);
-
-    requests.fields.addAll({
+    Map<String, String> fields = {
       "title": title,
       "description": description,
       "total_expense": expenses,
-    });
+    };
 
+    List<http.MultipartFile> files = [];
     for (var filed in fileList) {
       final file = File(filed.path!);
-      final stream = http.ByteStream(Stream.castFrom(file.openRead()));
-      final length = await file.length();
-
-      final multipartFile = http.MultipartFile('attachments[]', stream, length,
-          filename: filed.name);
-      requests.files.add(multipartFile);
+      final multipartFile = await http.MultipartFile.fromPath('attachments[]', file.path, filename: filed.name);
+      files.add(multipartFile);
     }
-    final responseStream = await requests.send();
 
-    final response = await http.Response.fromStream(responseStream);
-    debugPrint(response.toString());
-    final responseData = json.decode(response.body);
+    try {
+      final response = await Connect().postMultipartResponse(Constant.TADA_STORE_URL, headers, fields, files);
+      final responseData = json.decode(response.body);
 
-    if (response.statusCode == 200) {
-      final tadaResponse = IssueLeaveResponse.fromJson(responseData);
-      return tadaResponse;
-    } else {
-      var errorMessage = responseData['message'];
-      print(errorMessage);
-      throw errorMessage;
+      if (response.statusCode == 200) {
+        return IssueLeaveResponse.fromJson(responseData);
+      } else {
+        throw responseData['message'] ?? "Failed to create TADA";
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 }

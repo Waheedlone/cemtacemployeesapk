@@ -1,3 +1,4 @@
+import 'package:cnattendance/utils/responsive.dart';
 import 'package:cnattendance/utils/constant.dart';
 import 'package:cnattendance/widget/headerprofile.dart';
 import 'package:cnattendance/widget/leavescreen/issueleavesheet.dart';
@@ -72,46 +73,56 @@ class LeaveScreenState extends State<LeaveScreen> {
             return initialState();
           },
           child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  HeaderProfile(),
-                  SizedBox(height: 20),
-                  Text('Leave', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 10),
-                  LeaveListDashboard(),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        useRootNavigator: true,
-                        builder: (context) {
-                          return IssueLeaveSheet();
-                        },
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: HexColor('#ED1C24'),
-                      minimumSize: Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+            child: Center(
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 1200),
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: Responsive.isMobile(context) ? 20 : 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    HeaderProfile(),
+                    SizedBox(height: 20),
+                    Text('Leave', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 10),
+                    LeaveListDashboard(),
+                    SizedBox(height: 20),
+                    Align(
+                      alignment: Responsive.isMobile(context) ? Alignment.center : Alignment.centerLeft,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: Responsive.isMobile(context) ? double.infinity : 300),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              useRootNavigator: true,
+                              builder: (context) {
+                                return IssueLeaveSheet();
+                              },
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: HexColor('#ED1C24'),
+                            minimumSize: Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text('Apply for Leave', style: TextStyle(color: Colors.white, fontSize: 18),)
+                        ),
                       ),
                     ),
-                    child: Text('Apply for Leave', style: TextStyle(color: Colors.white, fontSize: 18),)
-                  ),
-                  SizedBox(height: 30),
-                  Text("Recent Leave Activity",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 10),
-                  if (isVisible)
-                    LeaveListdetailDashboard()
-                  else
-                    Center(child: CircularProgressIndicator()),
-                ],
+                    SizedBox(height: 30),
+                    Text("Recent Leave Activity",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 10),
+                    if (isVisible)
+                      LeaveListdetailDashboard()
+                    else
+                      Center(child: CircularProgressIndicator()),
+                  ],
+                ),
               ),
             ),
           ),

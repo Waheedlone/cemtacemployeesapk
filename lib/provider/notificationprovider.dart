@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationProvider extends ChangeNotifier {
   static const _seenKey = 'notification_seen_total';
+  static const _seenNoticeKey = 'notice_seen_total';
   static int per_page = 10;
 
   int page = 1;
@@ -24,28 +25,38 @@ class NotificationProvider extends ChangeNotifier {
   /// How many notifications the user has already seen (persisted).
   int _seenTotal = 0;
 
+  /// Total notices we have fetched from the server most recently.
+  int _serverNoticeTotal = 0;
+
+  /// How many notices the user has already seen (persisted).
+  int _seenNoticeTotal = 0;
+
   /// Extra notifications from FCM push that arrived after the last fetch.
   int _fcmDelta = 0;
 
   /// The badge count the user sees on the bell icon.
-  int get unreadCount => (_serverTotal - _seenTotal + _fcmDelta).clamp(0, 999);
+  int get unreadCount =>
+      ((_serverTotal - _seenTotal) + (_serverNoticeTotal - _seenNoticeTotal) + _fcmDelta)
+          .clamp(0, 999);
 
   List<model.Notification> _notificationList = [];
   List<model.Notification> get notificationList => [..._notificationList];
 
   NotificationProvider() {
-    _loadSeenTotal();
+    _loadSeenTotals();
   }
 
-  Future<void> _loadSeenTotal() async {
+  Future<void> _loadSeenTotals() async {
     final prefs = await SharedPreferences.getInstance();
     _seenTotal = prefs.getInt(_seenKey) ?? 0;
+    _seenNoticeTotal = prefs.getInt(_seenNoticeKey) ?? 0;
     notifyListeners();
   }
 
-  Future<void> _saveSeenTotal(int value) async {
+  Future<void> _saveSeenTotals(int notificationValue, int noticeValue) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_seenKey, value);
+    await prefs.setInt(_seenKey, notificationValue);
+    await prefs.setInt(_seenNoticeKey, noticeValue);
   }
 
   /// Called when a new FCM push notification arrives.
@@ -56,10 +67,11 @@ class NotificationProvider extends ChangeNotifier {
 
   /// Called when the user opens the notification screen — resets badge to 0.
   void markAllRead() {
-    // Mark everything seen: seenTotal = serverTotal + fcmDelta
+    // Mark everything seen
     _seenTotal = _serverTotal + _fcmDelta;
+    _seenNoticeTotal = _serverNoticeTotal;
     _fcmDelta = 0;
-    _saveSeenTotal(_seenTotal);
+    _saveSeenTotals(_seenTotal, _seenNoticeTotal);
     notifyListeners();
   }
 
@@ -69,42 +81,61 @@ class NotificationProvider extends ChangeNotifier {
       final token = await Preferences().getToken();
       if (token.isEmpty) return;
 
-      final uri = Uri.parse(Constant.NOTIFICATION_URL).replace(queryParameters: {
-        'page': '1',
-        'per_page': '1',
-      });
-
       final headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
       };
 
-      final response = await Connect().getResponse(uri.toString(), headers);
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-
-        int total = 0;
-        // Try meta.total (paginated response)
-        if (data['meta'] is Map && data['meta']['total'] != null) {
-          total = data['meta']['total'] as int;
-        } else if (data['data'] is List) {
-          total = (data['data'] as List).length;
+      // 1. Fetch Notification Count
+      try {
+        final notifUri = Uri.parse(Constant.NOTIFICATION_URL).replace(queryParameters: {
+          'page': '1',
+          'per_page': '1',
+        });
+        final notifResponse = await Connect().getResponse(notifUri.toString(), headers);
+        if (notifResponse.statusCode == 200) {
+          final data = json.decode(notifResponse.body);
+          _serverTotal = _parseTotal(data);
         }
-
-        _serverTotal = total;
-
-        // If seenTotal is somehow higher than current total, reset it
-        if (_seenTotal > _serverTotal) {
-          _seenTotal = _serverTotal;
-          _saveSeenTotal(_seenTotal);
-        }
-
-        notifyListeners();
+      } catch (e) {
+        debugPrint('Fetch Notification Count error: $e');
       }
+
+      // 2. Fetch Notice Count
+      try {
+        final noticeUri = Uri.parse(Constant.NOTICE_URL).replace(queryParameters: {
+          'page': '1',
+          'per_page': '1',
+        });
+        final noticeResponse = await Connect().getResponse(noticeUri.toString(), headers);
+        if (noticeResponse.statusCode == 200) {
+          final data = json.decode(noticeResponse.body);
+          _serverNoticeTotal = _parseTotal(data);
+        }
+      } catch (e) {
+        debugPrint('Fetch Notice Count error: $e');
+      }
+
+      // Sanitize totals
+      if (_seenTotal > _serverTotal) _seenTotal = _serverTotal;
+      if (_seenNoticeTotal > _serverNoticeTotal) _seenNoticeTotal = _serverNoticeTotal;
+
+      notifyListeners();
     } catch (e) {
       debugPrint('fetchUnreadCount error: $e');
     }
+  }
+
+  int _parseTotal(Map<String, dynamic> data) {
+    if (data['meta'] is Map && data['meta']['total'] != null) {
+      return data['meta']['total'] as int;
+    } else if (data['total'] != null) {
+       return int.tryParse(data['total'].toString()) ?? 0;
+    } else if (data['data'] is List) {
+      return (data['data'] as List).length;
+    }
+    return 0;
   }
 
   /// Full fetch for the notification list screen.

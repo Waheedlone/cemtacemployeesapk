@@ -24,7 +24,7 @@ class Dashboard {
         officeTime: OfficeTime.fromJson(json['office_time']),
         company: Company.fromJson(json['company']),
         employeeWeeklyReport : json['employee_weekly_report'],
-        shift_dates : List.from(json['shift_dates']),
+        shift_dates : List.from(json['shift_dates'] ?? []),
         notification_count: json['notification_count'] ?? 0
     );
   }

@@ -33,7 +33,32 @@ class Connect {
       rethrow;
     }
   }
-  
+
+  Future<http.Response> postMultipartResponse(
+      String url, Map<String, String> headers, Map<String, String> fields, List<http.MultipartFile> files) async {
+    Log.d("Connect", "Multipart POST Request: $url");
+    Log.d("Connect", "Headers: $headers");
+    Log.d("Connect", "Fields: $fields");
+    Log.d("Connect", "Files: ${files.map((f) => f.field).toList()}");
+    var uri = Uri.parse(url);
+    try {
+      var request = http.MultipartRequest('POST', uri);
+      request.headers.addAll(headers);
+      request.fields.addAll(fields);
+      request.files.addAll(files);
+
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+      
+      Log.d("Connect", "Multipart POST Response Code: ${response.statusCode}");
+      Log.d("Connect", "Multipart POST Response Body: ${response.body}");
+      return response;
+    } catch (e) {
+      Log.e("Connect", "Multipart POST Error: $e");
+      rethrow;
+    }
+  }
+
   Future<http.Response> deleteResponse(String url, Map<String, String> headers) async {
     Log.d("Connect", "DELETE Request: $url");
     Log.d("Connect", "Headers: $headers");

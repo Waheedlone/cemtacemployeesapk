@@ -46,16 +46,29 @@ class NoticeListState extends State<NoticeList> {
       return ShimmerLoading(child: ShimmerLoading.buildListShimmer());
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: ListView.builder(
+    if (items.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.notifications_off_outlined,
+                size: 64, color: Colors.grey[300]),
+            const SizedBox(height: 16),
+            Text(
+              "No notices yet",
+              style: TextStyle(color: Colors.grey[500], fontSize: 16),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
         physics: AlwaysScrollableScrollPhysics(),
-          primary: false,
-          controller: _controller,
-          itemCount: items.length,
-          itemBuilder: (ctx, index) {
-            return NotificationCard(notification: items[index]);
-          }),
-    );
+        controller: _controller,
+        itemCount: items.length,
+        itemBuilder: (ctx, index) {
+          return NotificationCard(notification: items[index]);
+        });
   }
 }

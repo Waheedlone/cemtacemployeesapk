@@ -6,8 +6,8 @@ class AttendanceStatus {
 
   factory AttendanceStatus.fromJson(dynamic json) {
     return AttendanceStatus(
-        checkInAt : json['check_in_at'].toString() ?? "-",
-        checkOutAt : json['check_out_at'].toString() ?? "-",
+        checkInAt : json['check_in_at']?.toString() ?? "-",
+        checkOutAt : json['check_out_at']?.toString() ?? "-",
         productiveTimeInMin : json['productive_time_in_min'] ?? 0
     );
   }

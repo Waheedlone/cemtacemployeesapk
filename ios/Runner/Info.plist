@@ -29,11 +29,15 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationUsageDescription</key>
-	<string>Digital HRS would like to access your location validate check in and checkout feature.</string>
+	<string>Digital HRS needs your location to validate your attendance check-in and check-out based on office location.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Digital HRS would like to access your location validate check in and checkout feature.</string>
+	<string>Digital HRS needs your location to validate your attendance check-in and check-out based on office location.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Digital HRS needs access to your camera for face registration and identity verification.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Digital HRS needs access to your microphone for video capture features.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Digital HRS would like to access your gallery to upload profile picture.</string>
+	<string>Digital HRS needs access to your gallery to allow you to upload a profile picture.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

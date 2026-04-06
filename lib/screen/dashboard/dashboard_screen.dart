@@ -1,4 +1,5 @@
-﻿import 'package:cnattendance/provider/prefprovider.dart';
+import 'package:cnattendance/utils/responsive.dart';
+import 'package:cnattendance/provider/prefprovider.dart';
 import 'package:cnattendance/screen/dashboard/homescreen.dart';
 import 'package:cnattendance/screen/dashboard/leavescreen.dart';
 import 'package:cnattendance/screen/dashboard/attendancescreen.dart';
@@ -17,6 +18,15 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class DashboardScreenState extends State<DashboardScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _screens = [
+    HomeScreen(),
+    GatePassScreen(),
+    AttendanceScreen(),
+    LeaveScreen(),
+    MoreScreen(),
+  ];
 
   List<PersistentTabConfig> _buildTabs() {
     return [
@@ -66,6 +76,9 @@ class DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<PrefProvider>(context, listen: false).getUser();
+    });
   }
 
   PersistentTabController _controller =
@@ -73,31 +86,78 @@ class DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final prefProvider = Provider.of<PrefProvider>(context);
-    prefProvider.getUser();
-    return Scaffold(
-      body: PersistentTabView(
-        controller: _controller,
-        tabs: _buildTabs(),
-        navBarBuilder: (navBarConfig) => Style11BottomNavBar(
-          navBarConfig: navBarConfig,
-          navBarDecoration: NavBarDecoration(
-            borderRadius: BorderRadius.circular(0.0),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                spreadRadius: 1,
-                blurRadius: 8,
-                offset: Offset(0, -1),
-              ),
-            ],
+    Provider.of<PrefProvider>(context);
+
+    return Responsive(
+      mobile: Scaffold(
+        body: PersistentTabView(
+          controller: _controller,
+          tabs: _buildTabs(),
+          navBarBuilder: (navBarConfig) => Style11BottomNavBar(
+            navBarConfig: navBarConfig,
+            navBarDecoration: NavBarDecoration(
+              borderRadius: BorderRadius.circular(0.0),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  spreadRadius: 1,
+                  blurRadius: 8,
+                  offset: Offset(0, -1),
+                ),
+              ],
+            ),
           ),
+          backgroundColor: Colors.white,
+          handleAndroidBackButtonPress: true,
+          resizeToAvoidBottomInset: true,
+          stateManagement: true,
         ),
-        backgroundColor: Colors.white,
-        handleAndroidBackButtonPress: true,
-        resizeToAvoidBottomInset: true,
-        stateManagement: true,
+      ),
+      desktop: Scaffold(
+        body: Row(
+          children: [
+            NavigationRail(
+              selectedIndex: _selectedIndex,
+              onDestinationSelected: (int index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+              labelType: NavigationRailLabelType.all,
+              selectedIconTheme: IconThemeData(color: HexColor("#ED1C24")),
+              unselectedIconTheme: IconThemeData(color: Colors.grey),
+              selectedLabelTextStyle: TextStyle(color: HexColor("#ED1C24")),
+              unselectedLabelTextStyle: TextStyle(color: Colors.grey),
+              destinations: const [
+                NavigationRailDestination(
+                  icon: Icon(Icons.home),
+                  label: Text('Home'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.local_activity),
+                  label: Text('Gate Pass'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.lock),
+                  label: Text('Attendance'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.search),
+                  label: Text('Leave'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.menu),
+                  label: Text('More'),
+                ),
+              ],
+            ),
+            const VerticalDivider(thickness: 1, width: 1),
+            Expanded(
+              child: _screens[_selectedIndex],
+            ),
+          ],
+        ),
       ),
     );
   }

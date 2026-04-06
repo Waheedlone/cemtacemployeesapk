@@ -2,13 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class Constant {
-  static const production = "https://mycontrolof.hrcemtac.in/public/";
-
-  /**
-   * https://hrdeptt.hrcemtac.in/public/
-   * https://cemtac.daneenalmajaz.in/public/
-   * Change value based on your need.
-   */
+  static const production = "https://hrcemtac.in/";
   static const MAIN_URL = production;
 
   static const API_URL = MAIN_URL + "api";
@@ -25,6 +19,8 @@ class Constant {
   static const ISSUE_LEAVE = "$API_URL/leave-requests/store";
   static const CANCEL_LEAVE = "$API_URL/leave-requests/cancel";
   static const DELETE_LEAVE_URL = "$API_URL/leave-requests/delete";
+  static const LEAVE_FOR_CONFIRMATION_URL = "$API_URL/leave-requests/for-confirmation";
+  static const LEAVE_CONFIRM_URL = "$API_URL/leave-requests"; // /{id}/confirm
   static const PROFILE_URL = "$API_URL/users/profile";
   static const EMPLOYEE_PROFILE_URL = "$API_URL/users/profile-detail";
   static const CONTENT_URL = "$API_URL/static-page-content";
@@ -49,6 +45,8 @@ class Constant {
   static const SUBSTITUTION_EMPLOYEES_URL = "$API_URL/substitutions/employees";
   static const SUBSTITUTION_URL = "$API_URL/substitutions";
   static const SUBSTITUTION_FOR_APPROVAL_URL = "$API_URL/substitutions/for-approval";
+  static const OPERATIONS_DAILY_ENTRIES_URL = "$API_URL/operations/daily-entries";
+  static const OPERATIONS_ASSIGNED_UNITS_URL = "$API_URL/operations/assigned-units";
 
   static const PROJECT_DASHBOARD_URL = "$API_URL/project-management-dashboard";
   static const PROJECT_LIST_URL = "$API_URL/assigned-projects-list";
@@ -76,8 +74,10 @@ class Constant {
   static const SUPPORT_LIST_URL = "$API_URL/support/get-user-query-lists";
 
   static const INTERNAL_REQUISITIONS_FOR_APPROVAL = "$API_URL/internal-requisitions/for-approval";
-  static const INTERNAL_REQUISITIONS_APPROVE = "$API_URL/internal-requisitions"; // /{id}/approve will be appended
-  static const INTERNAL_REQUISITIONS_REJECT = "$API_URL/internal-requisitions"; // /{id}/reject will be appended
+  static const INTERNAL_REQUISITIONS_APPROVE = "$API_URL/internal-requisitions"; // /{id}/approve
+  static const INTERNAL_REQUISITIONS_REJECT = "$API_URL/internal-requisitions"; // /{id}/reject
+  static const INTERNAL_REQUISITIONS_DETAIL_URL = "$API_URL/internal-requisitions/for-approval"; // /{id}
+  static const INTERNAL_REQUISITIONS_APPROVE_ALL_URL = "$API_URL/internal-requisitions"; // /{id}/approve
 
   static const TOTAL_WORKING_HOUR = 8;
 }

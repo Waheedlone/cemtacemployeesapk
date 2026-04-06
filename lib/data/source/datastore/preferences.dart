@@ -12,6 +12,9 @@ class Preferences with ChangeNotifier {
   final String USER_FULLNAME = "user_fullname";
   final String USER_AUTH = "user_auth";
   final String APP_IN_ENGLISH = "eng_date";
+  final String USER_FACE_REGISTERED = "user_face_registered";
+  final String LAST_CHECK_IN = "last_check_in";
+  final String LAST_CHECK_OUT = "last_check_out";
 
   Future<bool> saveUser(Login data) async {
     // Obtain shared preferences.
@@ -53,6 +56,9 @@ class Preferences with ChangeNotifier {
     await prefs.setString(USER_FULLNAME, '');
     await prefs.setBool(USER_AUTH, false);
     await prefs.setBool(APP_IN_ENGLISH, true);
+    await prefs.setBool(USER_FACE_REGISTERED, false);
+    await prefs.setString(LAST_CHECK_IN, '-');
+    await prefs.setString(LAST_CHECK_OUT, '-');
 
     notifyListeners();
   }
@@ -64,6 +70,16 @@ class Preferences with ChangeNotifier {
   void saveAppEng(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(APP_IN_ENGLISH, value);
+  }
+
+  Future<void> saveFaceRegistered(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(USER_FACE_REGISTERED, value);
+  }
+
+  Future<bool> getFaceRegistered() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(USER_FACE_REGISTERED) ?? false;
   }
 
   Future<User> getUser() async {
@@ -112,5 +128,19 @@ class Preferences with ChangeNotifier {
   Future<bool> getEnglishDate() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(APP_IN_ENGLISH) ?? true;
+  }
+
+  Future<void> saveAttendanceStatus(String checkIn, String checkOut) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(LAST_CHECK_IN, checkIn);
+    await prefs.setString(LAST_CHECK_OUT, checkOut);
+  }
+
+  Future<Map<String, String>> getAttendanceStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    return {
+      'check-in': prefs.getString(LAST_CHECK_IN) ?? '-',
+      'check-out': prefs.getString(LAST_CHECK_OUT) ?? '-',
+    };
   }
 }

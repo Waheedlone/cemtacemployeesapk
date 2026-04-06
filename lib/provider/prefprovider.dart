@@ -8,6 +8,7 @@ class PrefProvider with ChangeNotifier {
   var _fullname = '';
   var _avatar = '';
   var _auth = false;
+  var _faceRegistered = false;
 
   String get userName {
     return _userName;
@@ -25,12 +26,17 @@ class PrefProvider with ChangeNotifier {
     return _auth;
   }
 
+  bool get faceRegistered {
+    return _faceRegistered;
+  }
+
   void getUser() async {
     Preferences preferences = Preferences();
 
     _userName = await preferences.getUsername();
     _fullname = await preferences.getFullName();
     _avatar = await preferences.getAvatar();
+    _faceRegistered = await preferences.getFaceRegistered();
     notifyListeners();
   }
 
@@ -56,6 +62,14 @@ class PrefProvider with ChangeNotifier {
     preferences.saveUserAuth(value);
 
     _auth = await preferences.getUserAuth();
+    notifyListeners();
+  }
+
+  void saveFaceRegistered(bool value) async {
+    Preferences preferences = Preferences();
+    await preferences.saveFaceRegistered(value);
+
+    _faceRegistered = await preferences.getFaceRegistered();
     notifyListeners();
   }
 }

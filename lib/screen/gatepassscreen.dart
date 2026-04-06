@@ -1,4 +1,5 @@
-﻿import 'package:cnattendance/provider/gatepassprovider.dart';
+import 'package:cnattendance/utils/responsive.dart';
+import 'package:cnattendance/provider/gatepassprovider.dart';
 import 'package:cnattendance/widget/gatepass/gate_pass_request_sheet.dart';
 import 'package:cnattendance/widget/gatepass/gatepass_list.dart';
 import 'package:flutter/material.dart';
@@ -52,10 +53,16 @@ class _GatePassScreenState extends State<GatePassScreen> {
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text('Request', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
       ),
-      body: RefreshIndicator(
-        onRefresh: () =>
-            Provider.of<GatePassProvider>(context, listen: false).fetchGatePasses(),
-        child: GatePassList(),
+      body: Center(
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 1200),
+          padding: EdgeInsets.symmetric(horizontal: Responsive.isMobile(context) ? 0 : 20),
+          child: RefreshIndicator(
+            onRefresh: () =>
+                Provider.of<GatePassProvider>(context, listen: false).fetchGatePasses(),
+            child: GatePassList(),
+          ),
+        ),
       ),
     );
   }

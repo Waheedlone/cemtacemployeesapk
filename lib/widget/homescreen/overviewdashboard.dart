@@ -9,6 +9,7 @@ import 'package:cnattendance/screen/projectscreen/tasklistscreen/tasklistscreen.
 import 'package:cnattendance/screen/overtimescreen.dart';
 import 'package:cnattendance/screen/shifthandoverscreen.dart';
 import 'package:cnattendance/screen/substitutionscreen.dart';
+import 'package:cnattendance/utils/responsive.dart';
 import 'package:cnattendance/widget/shimmer_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:cnattendance/widget/homescreen/cardoverview.dart';
@@ -32,19 +33,20 @@ class OverviewDashboard extends StatelessWidget {
       {'type': 'Gate-Pass', 'value': _overview['gate_pass'] ?? '0', 'icon': Icons.local_activity},
      // {'type': 'Total-Task', 'value': _overview['total_task'] ?? '0', 'icon': Icons.outlined_flag_sharp},
       {'type': 'Requisitions Request', 'value': _overview['internal_requisition'] ?? '0', 'icon': Icons.assignment_late},
-      {'type': 'Substitution', 'value': '0', 'icon': Icons.swap_horiz},
-      {'type': 'Shift Handover', 'value': '0', 'icon': Icons.sync_alt},
-      {'type': 'Overtime', 'value': '0', 'icon': Icons.more_time},
+      {'type': 'Substitution', 'value': _overview['substitution'] ?? '0', 'icon': Icons.swap_horiz},
+      {'type': 'Shift Handover', 'value': _overview['shift_handover'] ?? '0', 'icon': Icons.sync_alt},
+      {'type': 'Overtime', 'value': _overview['overtime'] ?? '0', 'icon': Icons.more_time},
+      {'type': 'Download Shift', 'value': '0', 'icon': Icons.download_for_offline},
     ];
 
     return GridView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 1.5, // Adjust this value to change the card's aspect ratio
+        crossAxisCount: Responsive.isDesktop(context) ? 4 : Responsive.isTablet(context) ? 3 : 2,
+        crossAxisSpacing: 15,
+        mainAxisSpacing: 15,
+        childAspectRatio: 1.2, // Adjusted for the new card design
       ),
       itemCount: overviewItems.length,
       itemBuilder: (context, index) {
