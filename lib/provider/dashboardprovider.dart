@@ -219,8 +219,11 @@ class DashboardProvider with ChangeNotifier {
     _overviewList.update('present', (value) => overview.presentDays.toString());
     _overviewList.update(
         'holiday', (value) => overview.totalHolidays.toString());
+    
+    int remainingLeave = overview.totalPaidLeaves - overview.totalLeaveTaken;
     _overviewList.update(
-        'leave', (value) => overview.totalLeaveTaken.toString());
+        'leave', (value) => (remainingLeave < 0 ? 0 : remainingLeave).toString());
+    
     _overviewList.update(
         'request', (value) => overview.totalPendingLeaves.toString());
     _overviewList.update('gate_pass',
@@ -235,7 +238,7 @@ class DashboardProvider with ChangeNotifier {
         (value) => overview.total_shift_handovers.toString());
     _overviewList.update(
         'overtime', (value) => overview.total_overtimes.toString());
-
+ 
     notifyListeners();
   }
 

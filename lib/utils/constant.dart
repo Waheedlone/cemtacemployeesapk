@@ -78,6 +78,8 @@ class Constant {
   static const INTERNAL_REQUISITIONS_REJECT = "$API_URL/internal-requisitions"; // /{id}/reject
   static const INTERNAL_REQUISITIONS_DETAIL_URL = "$API_URL/internal-requisitions/for-approval"; // /{id}
   static const INTERNAL_REQUISITIONS_APPROVE_ALL_URL = "$API_URL/internal-requisitions"; // /{id}/approve
+  
+  static const SHIFT_ROSTER_URL = "$API_URL/employees/shift-roster";
 
   static const TOTAL_WORKING_HOUR = 8;
 }

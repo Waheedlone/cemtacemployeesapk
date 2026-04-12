@@ -64,10 +64,12 @@ class LeaveProvider with ChangeNotifier {
 
     try {
       final response = await Connect().getResponse(uri.toString(), headers);
+      debugPrint("API Response Status: ${response.statusCode}");
+      debugPrint("API Response Body: ${response.body}");
 
       final responseData = json.decode(response.body);
       if (response.statusCode == 200) {
-        debugPrint(responseData.toString());
+        debugPrint("API Decoded Data: $responseData");
 
         final responseJson = Leavetyperesponse.fromJson(responseData);
         makeLeaveList(responseJson.data);
@@ -167,7 +169,7 @@ class LeaveProvider with ChangeNotifier {
   }
 
   Future<IssueLeaveResponse> issueLeave(
-      String from, String to, String reason, int leaveId) async {
+      String from, String to, String reason, int leaveId, {String? earlyExit}) async {
     var uri = Uri.parse(Constant.ISSUE_LEAVE);
 
     Preferences preferences = Preferences();
@@ -184,6 +186,7 @@ class LeaveProvider with ChangeNotifier {
         'leave_to': to,
         'leave_type_id': leaveId.toString(),
         'reasons': reason,
+        if (earlyExit != null) 'early_exit': earlyExit,
       });
 
       final responseData = json.decode(response.body);
@@ -316,7 +319,7 @@ class LeaveProvider with ChangeNotifier {
 
     Map<String, String> body = {
       'status': status,
-      'remarks': remarks,
+      'admin_remark': remarks,
     };
 
     try {

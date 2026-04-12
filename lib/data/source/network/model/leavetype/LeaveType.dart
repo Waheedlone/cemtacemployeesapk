@@ -11,13 +11,17 @@ class LeaveType {
 
   factory LeaveType.fromJson(dynamic json) {
     return LeaveType(
-        leaveTypeId: json['leave_type_id'].toString() ?? "",
-        leaveTypeName: json['leave_type_name'].toString() ?? "",
-        leaveTypeSlug: json['leave_type_slug '].toString() ?? "",
-        leaveTypeStatus: json['leave_type_status'] ?? false,
-        earlyExit: json['early_exit'] ?? false,
-        totalLeaveAllocated: json['total_leave_allocated'].toString() ?? "",
-        leaveTaken: json['leave_taken'] ?? 0);
+        leaveTypeId: json['leave_type_id']?.toString() ?? "0",
+        leaveTypeName: json['leave_type_name']?.toString() ?? "",
+        leaveTypeSlug: json['leave_type_slug ']?.toString() ?? json['leave_type_slug']?.toString() ?? "",
+        leaveTypeStatus: (json['leave_type_status'] is bool)
+            ? json['leave_type_status']
+            : (json['leave_type_status'] == 1 || json['leave_type_status'] == '1' || json['leave_type_status'] == true || json['leave_type_status'] == 'true'),
+        earlyExit: (json['early_exit'] is bool)
+            ? json['early_exit']
+            : (json['early_exit'] == 1 || json['early_exit'] == '1' || json['early_exit'] == true || json['early_exit'] == 'true'),
+        totalLeaveAllocated: json['total_leave_allocated']?.toString() ?? "0",
+        leaveTaken: json['leave_taken'] is int ? json['leave_taken'] : int.tryParse(json['leave_taken']?.toString() ?? "0") ?? 0);
   }
 
   List<LeaveType> getList(List<dynamic> leaveList){

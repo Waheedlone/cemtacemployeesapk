@@ -151,6 +151,8 @@ class _OvertimeScreenState extends State<OvertimeScreen> {
         return Colors.red;
       case 'paid':
         return Colors.blue;
+      case 'pending_final':
+        return Colors.blue;
       case 'pending':
       default:
         return Colors.orange;

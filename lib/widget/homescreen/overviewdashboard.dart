@@ -9,6 +9,7 @@ import 'package:cnattendance/screen/projectscreen/tasklistscreen/tasklistscreen.
 import 'package:cnattendance/screen/overtimescreen.dart';
 import 'package:cnattendance/screen/shifthandoverscreen.dart';
 import 'package:cnattendance/screen/substitutionscreen.dart';
+import 'package:cnattendance/screen/dashboard/shift_roster_screen.dart';
 import 'package:cnattendance/utils/responsive.dart';
 import 'package:cnattendance/widget/shimmer_loading.dart';
 import 'package:flutter/material.dart';
@@ -31,12 +32,12 @@ class OverviewDashboard extends StatelessWidget {
       {'type': 'Leave', 'value': _overview['leave'] ?? '0', 'icon': Icons.person_off},
       {'type': 'Request', 'value': _overview['request'] ?? '0', 'icon': Icons.pending_actions},
       {'type': 'Gate-Pass', 'value': _overview['gate_pass'] ?? '0', 'icon': Icons.local_activity},
-     // {'type': 'Total-Task', 'value': _overview['total_task'] ?? '0', 'icon': Icons.outlined_flag_sharp},
       {'type': 'Requisitions Request', 'value': _overview['internal_requisition'] ?? '0', 'icon': Icons.assignment_late},
       {'type': 'Substitution', 'value': _overview['substitution'] ?? '0', 'icon': Icons.swap_horiz},
       {'type': 'Shift Handover', 'value': _overview['shift_handover'] ?? '0', 'icon': Icons.sync_alt},
       {'type': 'Overtime', 'value': _overview['overtime'] ?? '0', 'icon': Icons.more_time},
-      {'type': 'Download Shift', 'value': '0', 'icon': Icons.download_for_offline},
+      {'type': 'Shift Roster', 'value': 'View', 'icon': Icons.calendar_month},
+      {'type': 'Download Shift', 'value': 'Action', 'icon': Icons.download_for_offline},
     ];
 
     return GridView.builder(
@@ -72,6 +73,8 @@ class OverviewDashboard extends StatelessWidget {
                Navigator.push(context, MaterialPageRoute(builder: (context) => ShiftHandoverScreen()));
             } else if (overviewItems[index]['type'] == 'Overtime') {
                Navigator.push(context, MaterialPageRoute(builder: (context) => OvertimeScreen()));
+            } else if (overviewItems[index]['type'] == 'Shift Roster') {
+               Navigator.push(context, MaterialPageRoute(builder: (context) => ShiftRosterScreen()));
             }
           },
           child: CardOverView(

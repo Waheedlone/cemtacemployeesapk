@@ -108,107 +108,131 @@ class loginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Form(
-        key: _form,
+      body: Center(
         child: Container(
+          constraints: BoxConstraints(maxWidth: 450),
           padding: EdgeInsets.all(20),
           child: SingleChildScrollView(
-            child: IgnorePointer(
-              ignoring: _isLoading,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  SizedBox(height: 100),
-                  Center(
-                    child: SizedBox(
-                      width: 200,
-                      height: 200,
-                      child: Image.asset('assets/icons/cemtac.png'),
-                    ),
-                  ),
-                  SizedBox(height: 50),
-                  Text(
-                    'Login',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 20),
-                  TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (!validateField(value!)) {
-                        return "Empty Field";
-                      }
-                      return null;
-                    },
-                    controller: _usernameController,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person, color: Colors.grey),
-                      labelText: 'Username',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+            child: Form(
+              key: _form,
+              child: IgnorePointer(
+                ignoring: _isLoading,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: 50),
+                    Center(
+                      child: SizedBox(
+                        width: 180,
+                        height: 180,
+                        child: Image.asset('assets/icons/cemtac.png'),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  TextFormField(
-                    obscureText: _obscureText,
-                    validator: (value) {
-                      if (!validateField(value!)) {
-                        return "Empty Field";
-                      }
-                      return null;
-                    },
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock, color: Colors.grey),
-                      labelText: 'Password',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                    SizedBox(height: 40),
+                    Text(
+                      'Login',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        color: HexColor('#00002B'),
                       ),
-                      suffixIcon: InkWell(
-                        onTap: _toggle,
-                        child: Icon(
-                          _obscureText
-                              ? FontAwesomeIcons.eye
-                              : FontAwesomeIcons.eyeSlash,
-                          size: 15.0,
-                          color: Colors.grey,
+                    ),
+                    SizedBox(height: 30),
+                    TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (!validateField(value!)) {
+                          return "Empty Field";
+                        }
+                        return null;
+                      },
+                      controller: _usernameController,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.person, color: HexColor('#00002B').withOpacity(0.6)),
+                        labelText: 'Username',
+                        labelStyle: TextStyle(color: HexColor('#00002B').withOpacity(0.6)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide(color: HexColor('#ED1C24'), width: 2),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 30),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: HexColor('#ED1C24'),
-                      minimumSize: Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      obscureText: _obscureText,
+                      validator: (value) {
+                        if (!validateField(value!)) {
+                          return "Empty Field";
+                        }
+                        return null;
+                      },
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.lock, color: HexColor('#00002B').withOpacity(0.6)),
+                        labelText: 'Password',
+                        labelStyle: TextStyle(color: HexColor('#00002B').withOpacity(0.6)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide(color: HexColor('#ED1C24'), width: 2),
+                        ),
+                        suffixIcon: InkWell(
+                          onTap: _toggle,
+                          child: Icon(
+                            _obscureText
+                                ? FontAwesomeIcons.eye
+                                : FontAwesomeIcons.eyeSlash,
+                            size: 15.0,
+                            color: HexColor('#00002B').withOpacity(0.6),
+                          ),
+                        ),
                       ),
                     ),
-                    onPressed: () {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      validateValue();
-                    },
-                    child: Text(
-                      'Login',
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        openBrowserTab();
+                    SizedBox(height: 30),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: HexColor('#ED1C24'),
+                        minimumSize: Size(double.infinity, 55),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      onPressed: () {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        validateValue();
                       },
                       child: Text(
-                        'Forget Password',
-                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                        'Login',
+                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 25),
+                    Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          openBrowserTab();
+                        },
+                        child: Text(
+                          'Forget Password?',
+                          style: TextStyle(
+                            color: HexColor('#00002B').withOpacity(0.6),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 50),
+                  ],
+                ),
               ),
             ),
           ),

@@ -61,22 +61,49 @@ class AttendanceScreenState extends State<AttendanceScreen> {
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
-                    Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              DateFormat('MMMM').format(DateTime.now()),
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            Icon(Icons.arrow_forward_ios, size: 16),
-                          ],
+                    GestureDetector(
+                      onTap: () async {
+                        final provider = Provider.of<AttendanceReportProvider>(context, listen: false);
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (ctx) {
+                            return Container(
+                              height: 300,
+                              child: ListView.builder(
+                                itemCount: provider.month.length,
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                    title: Text(provider.month[index].name),
+                                    onTap: () {
+                                      provider.selectedMonth = index;
+                                      provider.getAttendanceReport();
+                                      Navigator.pop(context);
+                                      setState(() {});
+                                    },
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                Provider.of<AttendanceReportProvider>(context).month[Provider.of<AttendanceReportProvider>(context).selectedMonth].name,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              Icon(Icons.arrow_drop_down, size: 24),
+                            ],
+                          ),
                         ),
                       ),
                     ),

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:cnattendance/utils/ssl_helper.dart';
 
@@ -19,6 +20,7 @@ import 'package:cnattendance/provider/internal_requisition_provider.dart';
 import 'package:cnattendance/provider/payslipprovider.dart';
 import 'package:cnattendance/provider/prefprovider.dart';
 import 'package:cnattendance/provider/profileprovider.dart';
+import 'package:cnattendance/provider/shiftrosterprovider.dart';
 import 'package:cnattendance/provider/substitutionprovider.dart';
 import 'package:cnattendance/screen/auth/login_screen.dart';
 import 'package:cnattendance/screen/dashboard/dashboard_screen.dart';
@@ -38,6 +40,7 @@ import 'package:cnattendance/screen/substitutionscreen.dart';
 import 'package:cnattendance/screen/substitutionrequestscreen.dart';
 import 'package:cnattendance/screen/substitutiondetailscreen.dart';
 import 'package:cnattendance/screen/substitutionapprovalscreen.dart';
+import 'package:cnattendance/screen/dashboard/shift_roster_screen.dart';
 import 'package:cnattendance/screen/splashscreen.dart';
 import 'package:cnattendance/utils/face_service.dart';
 import 'package:cnattendance/utils/navigationservice.dart';
@@ -80,10 +83,10 @@ void main() async {
   }
   final faceService = FaceService(interpreter: tfliteService.interpreter);
 
-  // No FCM for web yet
-  if (!kIsWeb) {
+  // FCM only for mobile (and web if configured)
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     await NotificationService.initialize();
-
+ 
     // Request permissions for FCM
     await FirebaseMessaging.instance.requestPermission(
       alert: true,
@@ -91,20 +94,20 @@ void main() async {
       criticalAlert: true,
       sound: true,
     );
-
+ 
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
       if (!isAllowed) {
         AwesomeNotifications().requestPermissionToSendNotifications();
       }
     });
-
+ 
     AwesomeNotifications().setListeners(
       onActionReceivedMethod: NotificationService.onActionReceivedMethod,
       onNotificationCreatedMethod: NotificationService.onNotificationCreatedMethod,
       onNotificationDisplayedMethod: NotificationService.onNotificationDisplayedMethod,
       onDismissActionReceivedMethod: NotificationService.onDismissActionReceivedMethod,
     );
-
+ 
     FirebaseMessaging.onBackgroundMessage(_messageHandler);
   }
 
@@ -244,6 +247,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(
             create: (ctx) => OperationProvider(),
           ),
+          ChangeNotifierProvider(
+            create: (ctx) => ShiftRosterProvider(),
+          ),
         ],
         child: Portal(
           child: InAppNotification(
@@ -311,6 +317,7 @@ class MyApp extends StatelessWidget {
                     return SubstitutionDetailScreen(substitution: substitution);
                   },
                   SubstitutionApprovalScreen.routeName: (_) => SubstitutionApprovalScreen(),
+                  ShiftRosterScreen.routeName: (_) => ShiftRosterScreen(),
                 },
                 builder: EasyLoading.init(),
               ),

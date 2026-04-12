@@ -28,15 +28,22 @@ class Auth with ChangeNotifier {
         Log.e("Auth", "Failed to get FCM token: $e");
         fcm = "no_token_available"; // Fallback to non-empty placeholder if service is unavailable
       }
+      String deviceType = 'android';
+      if (kIsWeb) {
+        deviceType = 'web';
+      } else if (Platform.isIOS) {
+        deviceType = 'ios';
+      } else if (Platform.isAndroid) {
+        deviceType = 'android';
+      } else {
+        deviceType = 'desktop';
+      }
+
       final response = await Connect().postResponse(uri.toString(), headers, {
         'username': username,
         'password': password,
-        'fcm_token': fcm!,
-        'device_type': kIsWeb
-            ? 'web'
-            : Platform.isIOS
-                ? 'ios'
-                : 'android',
+        'fcm_token': fcm ?? 'no_token',
+        'device_type': deviceType,
         'uuid': await DeviceUUid().getUniqueDeviceId(),
       });
 

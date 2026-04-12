@@ -23,43 +23,58 @@ class LeaveScreenState extends State<LeaveScreen> {
   @override
   void didChangeDependencies() {
     if (init) {
-      initialState();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        initialState();
+      });
       init = false;
     }
     super.didChangeDependencies();
   }
 
   Future<String> initialState() async {
-    final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
-    final leaveData = await leaveProvider.getLeaveType();
+    try {
+      final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
+      final leaveData = await leaveProvider.getLeaveType();
 
-    if (!mounted) {
+      if (!mounted) {
+        return "Loaded";
+      }
+      if (leaveData.status == false) {
+        showToast(leaveData.message);
+      }
+
+      getLeaveDetailList();
       return "Loaded";
+    } catch (e) {
+      if (mounted) {
+        showToast(e.toString());
+      }
+      return "Error";
     }
-    if (leaveData.statusCode != 200) {
-      showToast(leaveData.message);
-    }
-
-    getLeaveDetailList();
-    return "Loaded";
   }
 
   void getLeaveDetailList() async {
-    final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
-    final detailResponse = await leaveProvider.getLeaveTypeDetail();
+    try {
+      final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
+      final detailResponse = await leaveProvider.getLeaveTypeDetail();
 
-    if (!mounted) {
-      return;
-    }
-    if (detailResponse.statusCode == 200) {
-      setState(() {
-        isVisible = true;
-      });
-      if (detailResponse.data.isEmpty) {
-        // showToast('No leave history found');
+      if (!mounted) {
+        return;
       }
-    } else {
-      showToast(detailResponse.message);
+      if (detailResponse.status == true) {
+        setState(() {
+          isVisible = true;
+        });
+        if (detailResponse.data.isEmpty) {
+          // showToast('No leave history found');
+        }
+      } else {
+        showToast(detailResponse.message);
+      }
+    } catch (e) {
+      if (mounted) {
+        showToast(e.toString());
+      }
     }
   }
 

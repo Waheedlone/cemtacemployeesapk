@@ -23,6 +23,7 @@ class IssueLeaveSheetState extends State<IssueLeaveSheet> {
   TextEditingController endDate = TextEditingController();
   TextEditingController reason = TextEditingController();
   TextEditingController startDate = TextEditingController();
+  TextEditingController earlyExit = TextEditingController();
 
   void issueLeave() async {
     if (endDate.text.isNotEmpty &&
@@ -34,7 +35,7 @@ class IssueLeaveSheetState extends State<IssueLeaveSheet> {
         isLoading = true;
         final response =
             await Provider.of<LeaveProvider>(context, listen: false).issueLeave(
-                startDate.text, endDate.text, reason.text, selectedValue!.id);
+                startDate.text, endDate.text, reason.text, selectedValue!.id, earlyExit: earlyExit.text.isNotEmpty ? earlyExit.text : null);
 
         if (!mounted) {
           return;
@@ -90,8 +91,13 @@ class IssueLeaveSheetState extends State<IssueLeaveSheet> {
       },
       child: Container(
         decoration: BoxDecoration(color: Colors.white),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: SafeArea(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 10,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 10,
+        ),
+        child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -150,10 +156,9 @@ class IssueLeaveSheetState extends State<IssueLeaveSheet> {
                           .toList(),
                       value: selectedValue,
                       onChanged: (value) {
-                        selectedValue = value as Leave?;
-                        if (selectedValue != null) {
-                          setState(() {});
-                        }
+                        setState(() {
+                          selectedValue = value as Leave?;
+                        });
                       },
                       iconStyleData: IconStyleData(
                         icon: const Icon(
@@ -165,12 +170,11 @@ class IssueLeaveSheetState extends State<IssueLeaveSheet> {
                       ),
                       buttonStyleData: ButtonStyleData(
                         height: 50,
-                        width: 160,
                         padding: const EdgeInsets.only(left: 14, right: 14),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
-                          border: Border.all(color: Colors.black26)
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white,
+                            border: Border.all(color: Colors.black26)
                         ),
                         elevation: 0,
                       ),
@@ -218,21 +222,28 @@ class IssueLeaveSheetState extends State<IssueLeaveSheet> {
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime(1950),
-                      //DateTime.now() - not to allow to choose before today.
                       lastDate: DateTime(2100));
-
+ 
                   if (pickedDate != null) {
-                    print(
-                        pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                    String formattedDate =
-                        DateFormat('yyyy-MM-dd hh:mm:ss').format(pickedDate);
-                    print(
-                        formattedDate); //formatted date output using intl package =>  2021-03-16
-                    setState(() {
-                      startDate.text =
-                          formattedDate; //set output date to TextField value.
-                    });
-                  } else {}
+                    final TimeOfDay? pickedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+ 
+                    if (pickedTime != null) {
+                      DateTime finalDateTime = DateTime(
+                        pickedDate.year,
+                        pickedDate.month,
+                        pickedDate.day,
+                        pickedTime.hour,
+                        pickedTime.minute,
+                      );
+                      setState(() {
+                        startDate.text =
+                            DateFormat('yyyy-MM-dd HH:mm:ss').format(finalDateTime);
+                      });
+                    }
+                  }
                 },
               ),
               gaps(10),
@@ -258,21 +269,28 @@ class IssueLeaveSheetState extends State<IssueLeaveSheet> {
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime(1950),
-                      //DateTime.now() - not to allow to choose before today.
                       lastDate: DateTime(2100));
-
+ 
                   if (pickedDate != null) {
-                    print(
-                        pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                    String formattedDate =
-                        DateFormat('yyyy-MM-dd hh:mm:ss').format(pickedDate);
-                    print(
-                        formattedDate); //formatted date output using intl package =>  2021-03-16
-                    setState(() {
-                      endDate.text =
-                          formattedDate; //set output date to TextField value.
-                    });
-                  } else {}
+                    final TimeOfDay? pickedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+ 
+                    if (pickedTime != null) {
+                      DateTime finalDateTime = DateTime(
+                        pickedDate.year,
+                        pickedDate.month,
+                        pickedDate.day,
+                        pickedTime.hour,
+                        pickedTime.minute,
+                      );
+                      setState(() {
+                        endDate.text =
+                            DateFormat('yyyy-MM-dd HH:mm:ss').format(finalDateTime);
+                      });
+                    }
+                  }
                 },
               ),
               gaps(10),
@@ -295,6 +313,42 @@ class IssueLeaveSheetState extends State<IssueLeaveSheet> {
                       borderRadius: BorderRadius.circular(10)),
                 ),
               ),
+              if (selectedValue != null && selectedValue!.isEarlyLeave)
+                Column(
+                  children: [
+                    gaps(10),
+                    TextField(
+                      controller: earlyExit,
+                      style: TextStyle(color: Colors.black),
+                      cursorColor: Colors.black,
+                      decoration: InputDecoration(
+                        hintText: 'Early Exit Time (Optional)',
+                        hintStyle: TextStyle(color: Colors.black54),
+                        prefixIcon: Icon(Icons.access_time, color: Colors.red),
+                        labelStyle: TextStyle(color: Colors.black),
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                      readOnly: true,
+                      onTap: () async {
+                        final TimeOfDay? pickedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        );
+
+                        if (pickedTime != null) {
+                          setState(() {
+                            final now = DateTime.now();
+                            final dt = DateTime(now.year, now.month, now.day, pickedTime.hour, pickedTime.minute);
+                            earlyExit.text = DateFormat('HH:mm').format(dt);
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
               gaps(20),
               Container(
                 width: MediaQuery.of(context).size.width,
