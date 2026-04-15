@@ -15,6 +15,7 @@ class Preferences with ChangeNotifier {
   final String USER_FACE_REGISTERED = "user_face_registered";
   final String LAST_CHECK_IN = "last_check_in";
   final String LAST_CHECK_OUT = "last_check_out";
+  final String DASHBOARD_DATA = "dashboard_data";
 
   Future<bool> saveUser(Login data) async {
     // Obtain shared preferences.
@@ -142,5 +143,15 @@ class Preferences with ChangeNotifier {
       'check-in': prefs.getString(LAST_CHECK_IN) ?? '-',
       'check-out': prefs.getString(LAST_CHECK_OUT) ?? '-',
     };
+  }
+
+  Future<void> saveDashboardCache(String json) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(DASHBOARD_DATA, json);
+  }
+
+  Future<String?> getDashboardCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(DASHBOARD_DATA);
   }
 }

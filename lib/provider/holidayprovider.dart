@@ -20,15 +20,20 @@ class HolidayProvider with ChangeNotifier {
   int toggleValue = 0;
 
   void holidayListFilter() {
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+
     _holidayListFilter.clear();
     if (toggleValue == 0) {
       _holidayListFilter.addAll(_holidayList
-          .where((element) => element.dateTime.isAfter(DateTime.now()))
+          .where((element) =>
+              element.dateTime.isAfter(todayStart.subtract(const Duration(seconds: 1))))
           .toList());
     } else {
       _holidayListFilter.addAll(_holidayList
-          .where((element) => element.dateTime.isBefore(DateTime.now()))
-          .toList().reversed);
+          .where((element) => element.dateTime.isBefore(todayStart))
+          .toList()
+          .reversed);
     }
 
     notifyListeners();

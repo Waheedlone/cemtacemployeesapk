@@ -21,7 +21,7 @@ class AttendanceReportProvider with ChangeNotifier {
 
   final List<Month> month = [
     Month(0, 'January'),
-    Month(1, 'Febuary'),
+    Month(1, 'February'),
     Month(2, 'March'),
     Month(3, 'April'),
     Month(4, 'May'),

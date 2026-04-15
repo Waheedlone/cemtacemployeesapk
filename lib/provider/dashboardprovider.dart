@@ -21,9 +21,13 @@ import 'package:intl/intl.dart';
 class DashboardProvider with ChangeNotifier {
   int _notificationCount = 0;
   bool _isLoading = false;
+  String _errorMessage = '';
+  bool _isUsingCache = false;
 
   int get notificationCount => _notificationCount;
   bool get isLoading => _isLoading;
+  String get errorMessage => _errorMessage;
+  bool get isUsingCache => _isUsingCache;
 
   final Map<String, String> _overviewList = {
     'present': '0',
@@ -96,8 +100,9 @@ class DashboardProvider with ChangeNotifier {
     showingBarGroups.addAll(rawBarGroups);
   }
 
-  Future<Dashboardresponse> getDashboard() async {
+  Future<Dashboardresponse?> getDashboard() async {
     _isLoading = true;
+    _errorMessage = '';
     notifyListeners();
 
     var uri = Uri.parse(Constant.DASHBOARD_URL);
@@ -131,35 +136,58 @@ class DashboardProvider with ChangeNotifier {
 
         makeWeeklyReport(dashboardResponse.data.employeeWeeklyReport);
 
-        DateTime startTime = DateFormat("hh:mm a")
-            .parse(dashboardResponse.data.officeTime.startTime);
-        DateTime endTime = DateFormat("hh:mm a")
-            .parse(dashboardResponse.data.officeTime.endTime);
+        await preferences.saveDashboardCache(response.body);
+        _isUsingCache = false;
 
-        await AwesomeNotifications().cancelAllSchedules();
-        for (var shift in dashboardResponse.data.shift_dates) {
-          scheduleNewNotification(shift, "Please check in on time ⏱️⌛️",
-              startTime.hour, startTime.minute);
-          scheduleNewNotification(
-              shift,
-              "Almost done with your shift 😄⌛️ Remember to checkout ⏱️",
-              endTime.hour,
-              endTime.minute);
+        if (hasListeners) {
+          _isLoading = false;
+          _errorMessage = '';
+          notifyListeners();
         }
-        _isLoading = false;
-        notifyListeners();
         return dashboardResponse;
       } else {
-        _isLoading = false;
-        notifyListeners();
-        var errorMessage = responseData['message'];
-        throw errorMessage;
+        var errorMessage = responseData['message'] ?? "Something went wrong. Please try again.";
+        return await _handleFailure(errorMessage);
       }
     } catch (e) {
+      return await _handleFailure(e.toString());
+    }
+  }
+
+  Future<Dashboardresponse?> _handleFailure(String error) async {
+    _errorMessage = error;
+    _isUsingCache = false;
+
+    // Try to load from cache on failure
+    try {
+      final cacheData = await Preferences().getDashboardCache();
+      if (cacheData != null) {
+        final cachedJson = json.decode(cacheData);
+        final dashboardResponse = Dashboardresponse.fromJson(cachedJson);
+        
+        updateAttendanceStatus(dashboardResponse.data.employeeTodayAttendance);
+        updateOverView(dashboardResponse.data.overview);
+        _notificationCount = dashboardResponse.data.notification_count;
+        makeWeeklyReport(dashboardResponse.data.employeeWeeklyReport);
+
+        _isUsingCache = true;
+        _errorMessage = "Sync failed. Showing last results.";
+        
+        if (hasListeners) {
+          _isLoading = false;
+          notifyListeners();
+        }
+        return dashboardResponse;
+      }
+    } catch (e) {
+      debugPrint("Cache load error: $e");
+    }
+
+    if (hasListeners) {
       _isLoading = false;
       notifyListeners();
-      throw e;
     }
+    return null;
   }
 
   void makeWeeklyReport(List<dynamic> employeeWeeklyReport) {
@@ -187,7 +215,9 @@ class DashboardProvider with ChangeNotifier {
     rawBarGroups.addAll(barchartValue);
     showingBarGroups.addAll(rawBarGroups);
 
-    notifyListeners();
+    if (hasListeners) {
+      notifyListeners();
+    }
   }
 
   void updateAttendanceStatus(EmployeeTodayAttendance employeeTodayAttendance) {
@@ -205,14 +235,18 @@ class DashboardProvider with ChangeNotifier {
     Preferences().saveAttendanceStatus(
         employeeTodayAttendance.checkInAt, employeeTodayAttendance.checkOutAt);
 
-    notifyListeners();
+    if (hasListeners) {
+      notifyListeners();
+    }
   }
 
   Future<void> loadAttendanceStatus() async {
     final status = await Preferences().getAttendanceStatus();
     _attendanceList.update('check-in', (value) => status['check-in']);
     _attendanceList.update('check-out', (value) => status['check-out']);
-    notifyListeners();
+    if (hasListeners) {
+      notifyListeners();
+    }
   }
 
   void updateOverView(Overview overview) {
@@ -239,7 +273,9 @@ class DashboardProvider with ChangeNotifier {
     _overviewList.update(
         'overtime', (value) => overview.total_overtimes.toString());
  
-    notifyListeners();
+    if (hasListeners) {
+      notifyListeners();
+    }
   }
 
   double calculateProdHour(int value) {
@@ -399,12 +435,25 @@ class DashboardProvider with ChangeNotifier {
   final double width = 15;
 
   BarChartGroupData makeGroupData(int x, double y1) {
-    return BarChartGroupData(barsSpace: 4, x: x, barRods: [
-      BarChartRodData(
-        toY: y1,
-        color: leftBarColor,
-        width: width,
-      ),
-    ]);
+    return BarChartGroupData(
+      barsSpace: 4,
+      x: x,
+      barRods: [
+        BarChartRodData(
+          toY: y1,
+          color: HexColor("#ED1C24"),
+          width: width,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(6),
+            topRight: Radius.circular(6),
+          ),
+          backDrawRodData: BackgroundBarChartRodData(
+            show: true,
+            toY: Constant.TOTAL_WORKING_HOUR.toDouble(),
+            color: Colors.white.withOpacity(0.05),
+          ),
+        ),
+      ],
+    );
   }
 }

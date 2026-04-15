@@ -13,9 +13,10 @@ class Heading extends StatefulWidget {
 }
 
 class HeadingState extends State<Heading> {
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
-    bool isLoading = false;
 
     final provider = Provider.of<ProfileProvider>(context, listen: false);
     final profile = Provider.of<ProfileProvider>(context).profile;
@@ -33,17 +34,19 @@ class HeadingState extends State<Heading> {
                 final XFile? image = await _picker.pickImage(
                     source: ImageSource.gallery, imageQuality: 50, maxWidth: 500);
                 if (image != null) {
-                  setState(() async {
-                    EasyLoading.show(
-                        status: 'Changing....', maskType: EasyLoadingMaskType.black);
-                    try {
+                  EasyLoading.show(
+                      status: 'Changing....', maskType: EasyLoadingMaskType.black);
+                  try {
+                    setState(() {
                       isLoading = true;
-                      await provider.updateProfile(
-                          '', '', '', '', '', '', File(image.path));
-                    } catch (e) {}
+                    });
+                    await provider.updateProfile(
+                        '', '', '', '', '', '', File(image.path));
+                  } catch (e) {}
+                  setState(() {
                     isLoading = false;
-                    EasyLoading.dismiss(animation: true);
                   });
+                  EasyLoading.dismiss(animation: true);
                 }
               },
               child: Stack(

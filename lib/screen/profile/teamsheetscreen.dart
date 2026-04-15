@@ -38,13 +38,19 @@ class TeamSheetState extends State<TeamSheet> {
   }
 
   Future<String> getTeam() async {
-    setState(() async {
+    setState(() {
       isLoading = true;
-      EasyLoading.show(status: "Loading", maskType: EasyLoadingMaskType.black);
-      await Provider.of<TeamSheetProvider>(context, listen: false).getTeam();
-      isLoading = false;
-      EasyLoading.dismiss(animation: true);
     });
+    EasyLoading.show(status: "Loading", maskType: EasyLoadingMaskType.black);
+    try {
+      await Provider.of<TeamSheetProvider>(context, listen: false).getTeam();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    setState(() {
+      isLoading = false;
+    });
+    EasyLoading.dismiss(animation: true);
 
     return "Loaded";
   }

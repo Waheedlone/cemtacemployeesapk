@@ -33,32 +33,32 @@ dependencies:
   http: ^1.6.0
   dio: ^5.1.2
   html: ^0.15.1
-  flutter_svg: ^2.2.3
+  flutter_svg: ^2.2.2
   shared_preferences: ^2.0.6
   flutter_easyloading: ^3.0.5
-  device_info_plus: ^12.3.0
+  device_info_plus: ^10.1.0
   expandable: ^5.0.1
   flutter_web_browser: ^0.17.1
   percent_indicator: ^4.0.1
   persistent_bottom_nav_bar_v2: ^6.2.0
   toggle_switch: ^2.0.1
   dropdown_button2: ^2.3.9
-  lottie: ^3.3.2
+  lottie: ^3.1.0
   flutter_html: ^3.0.0-alpha.3
   url_launcher: ^6.1.5
-  local_auth: ^3.0.0
-  geolocator: ^14.0.2
-  permission_handler: ^12.0.1
+  local_auth: ^2.3.0
+  geolocator: ^12.0.0
+  permission_handler: ^11.3.1
   table_calendar: ^3.0.6
   intl: ^0.20.2
   image_picker: ^1.2.1
-  network_info_plus: ^7.0.0
-  firebase_core: ^4.3.0
-  firebase_messaging: ^16.1.0
+  network_info_plus: ^6.0.1
+  firebase_core: ^3.9.0
+  firebase_messaging: ^15.2.5
   overlay_support: ^2.0.1
   flutter_ringtone_player: ^4.0.0+4
   hexcolor: ^3.0.2
-  fl_chart: ^1.1.1
+  fl_chart: ^0.67.0
   overlay_loading_progress: ^1.0.0
   slide_digital_clock: ^1.0.3
   get: ^4.6.5
@@ -70,8 +70,8 @@ dependencies:
   flutter_typeahead: ^5.2.0
   flutter_textfield_autocomplete: ^1.0.2
   path_provider: ^2.0.15
-  cloud_firestore: ^6.1.2
-  google_mlkit_face_detection: ^0.13.2
+  cloud_firestore: ^5.6.5
+  google_mlkit_face_detection: ^0.12.0
   tflite_flutter: ^0.12.1
   camera: ^0.11.0
   image: ^4.2.0

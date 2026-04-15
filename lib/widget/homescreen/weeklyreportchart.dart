@@ -2,6 +2,7 @@ import 'package:cnattendance/provider/dashboardprovider.dart';
 import 'package:cnattendance/widget/buttonborder.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 
 class WeeklyReportChart extends StatefulWidget {
@@ -32,10 +33,10 @@ class WeeklyReportChartState extends State<WeeklyReportChart> {
         aspectRatio: 1,
         child: Card(
           elevation: 0,
-          shape: ButtonBorder(),
-          color: Colors.white12,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          color: HexColor("#00002B"),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -191,7 +192,7 @@ class WeeklyReportChartState extends State<WeeklyReportChart> {
       return Container();
     }
     return SideTitleWidget(
-      meta: meta,
+      axisSide: meta.axisSide,
       space: 0,
       child: Text(text, style: style),
     );
@@ -210,7 +211,7 @@ class WeeklyReportChartState extends State<WeeklyReportChart> {
     );
 
     return SideTitleWidget(
-      meta: meta,
+      axisSide: meta.axisSide,
       space: 16, //margin top
       child: text,
     );

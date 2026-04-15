@@ -5,7 +5,7 @@ import 'package:cnattendance/provider/prefprovider.dart';
 import 'package:cnattendance/utils/constant.dart';
 import 'package:cnattendance/widget/homescreen/checkattendance.dart';
 import 'package:cnattendance/widget/homescreen/overviewdashboard.dart';
-import 'package:cnattendance/widget/homescreen/weeklyreportchart.dart';
+import 'package:cnattendance/widget/homescreen/overviewdashboard.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -73,14 +73,16 @@ class HomeScreenState extends State<HomeScreen> {
           await Provider.of<DashboardProvider>(context, listen: false)
                .getDashboard();
 
-       final user = dashboardResponse.data.user;
+       if (dashboardResponse != null) {
+         final user = dashboardResponse.data.user;
 
-       Provider.of<PrefProvider>(context, listen: false).saveBasicUser(User(
-           id: user.id,
-           name: user.name,
-           email: user.email,
-           username: user.username,
-           avatar: user.avatar));
+         Provider.of<PrefProvider>(context, listen: false).saveBasicUser(User(
+             id: user.id,
+             name: user.name,
+             email: user.email,
+             username: user.username,
+             avatar: user.avatar));
+       }
 
        return 'loaded';
     } catch (e) {
@@ -183,8 +185,7 @@ class HomeScreenState extends State<HomeScreen> {
                     ],
                     SizedBox(height: 20),
                     OverviewDashboard(),
-                    SizedBox(height: 20),
-                  //  WeeklyReportChart(),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),

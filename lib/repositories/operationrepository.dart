@@ -55,6 +55,7 @@ class OperationRepository {
         throw responseData['message'] ?? "Failed to fetch units";
       }
     } catch (e) {
+      debugPrint("OperationRepository getAssignedUnits error: $e");
       rethrow;
     }
   }
@@ -78,7 +79,9 @@ class OperationRepository {
         throw responseData['message'] ?? "Failed to fetch history";
       }
     } catch (e) {
+      debugPrint("OperationRepository getDailyEntries error: $e");
       rethrow;
     }
   }
 }
+

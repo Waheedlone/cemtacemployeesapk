@@ -36,13 +36,19 @@ class HolidayState extends State<Holiday> {
   }
 
   Future<String> loadHolidays() async {
-    setState(() async {
+    setState(() {
       isLoading = true;
-      EasyLoading.show(status: "Loading",maskType: EasyLoadingMaskType.black);
-      await Provider.of<HolidayProvider>(context, listen: false).getHolidays();
-      isLoading = false;
-      EasyLoading.dismiss(animation: true);
     });
+    EasyLoading.show(status: "Loading", maskType: EasyLoadingMaskType.black);
+    try {
+      await Provider.of<HolidayProvider>(context, listen: false).getHolidays();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    setState(() {
+      isLoading = false;
+    });
+    EasyLoading.dismiss(animation: true);
 
     return "loaded";
   }

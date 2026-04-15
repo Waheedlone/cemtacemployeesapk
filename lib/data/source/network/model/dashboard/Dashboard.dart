@@ -23,8 +23,8 @@ class Dashboard {
         overview: Overview.fromJson(json['overview']),
         officeTime: OfficeTime.fromJson(json['office_time']),
         company: Company.fromJson(json['company']),
-        employeeWeeklyReport : json['employee_weekly_report'],
-        shift_dates : List.from(json['shift_dates'] ?? []),
+        employeeWeeklyReport : json['employee_weekly_report'] ?? [],
+        shift_dates : List<String>.from(json['shift_dates'] ?? []),
         notification_count: json['notification_count'] ?? 0
     );
   }
@@ -46,7 +46,7 @@ class Dashboard {
     map['office_time'] = officeTime.toJson();
     map['company'] = company.toJson();
     map['employee_weekly_report'] =
-        employeeWeeklyReport.map((v) => v.toJson()).toList();
+        employeeWeeklyReport.map((v) => v?.toJson()).toList();
     map['notification_count'] = notification_count;
     return map;
   }

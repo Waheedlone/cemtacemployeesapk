@@ -29,7 +29,11 @@ class TeamSheetRepository{
         final responseJson = Teamsheetresponse.fromJson(responseData);
         return responseJson;
       } else {
-        var errorMessage = responseData['message'];
+        var errorMessage = responseData['message']?.toString() ?? "Failed to load team data";
+        // Sanitize error message if it looks like a system path
+        if (errorMessage.contains('/') || errorMessage.contains('\\')) {
+          errorMessage = "Unable to fetch team data. Please contact support.";
+        }
         throw errorMessage;
       }
     } catch (error) {

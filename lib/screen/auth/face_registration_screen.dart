@@ -4,6 +4,7 @@ import 'package:cnattendance/screen/dashboard/dashboard_screen.dart';
 import 'package:cnattendance/provider/prefprovider.dart';
 import 'package:cnattendance/utils/face_service.dart';
 import 'package:cnattendance/utils/firestore_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:image/image.dart' as img;
@@ -24,36 +25,55 @@ class _FaceRegistrationScreenState extends State<FaceRegistrationScreen> {
   late FaceService _faceService;
   FirestoreService _firestoreService = FirestoreService();
   bool _isBusy = false;
-  String _status = "Align your face within the frame";
+  String _status = kIsWeb ? "Face Registration not supported on Web" : "Align your face within the frame";
 
   @override
   void initState() {
     super.initState();
     _faceService = Provider.of<FaceService>(context, listen: false);
-    _initializeCamera();
+    if (!kIsWeb) {
+      _initializeCamera();
+    }
   }
 
   Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
-    final frontCamera = cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
-    );
+    try {
+      final cameras = await availableCameras();
+      if (cameras.isEmpty) {
+        setState(() => _status = "No cameras detected.");
+        return;
+      }
+      
+      final frontCamera = cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.front,
+        orElse: () => cameras.first,
+      );
 
-    _cameraController = CameraController(
-      frontCamera,
-      ResolutionPreset.medium,
-      enableAudio: false,
-    );
+      _cameraController = CameraController(
+        frontCamera,
+        ResolutionPreset.medium,
+        enableAudio: false,
+      );
 
-    await _cameraController!.initialize();
-    if (!mounted) return;
-    setState(() {});
+      await _cameraController!.initialize();
+      if (!mounted) return;
+      setState(() {});
+    } catch (e) {
+      if (mounted) {
+        setState(() => _status = "Camera Error: $e");
+      }
+    }
   }
 
   Future<void> _captureAndRegister() async {
+    if (kIsWeb) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Face verification is only available on Mobile.")));
+      return;
+    }
+    
     print("DEBUG: _captureAndRegister triggered");
     if (_isBusy || _cameraController == null || !_cameraController!.value.isInitialized) {
-      print("DEBUG: _captureAndRegister: Bailing out - busy: $_isBusy, null: ${_cameraController == null}, initialized: ${_cameraController?.value.isInitialized}");
       return;
     }
 
@@ -63,36 +83,25 @@ class _FaceRegistrationScreenState extends State<FaceRegistrationScreen> {
     });
 
     try {
-      print("DEBUG: Taking picture...");
       final image = await _cameraController!.takePicture();
-      print("DEBUG: Picture taken: ${image.path}");
       
       setState(() => _status = "Processing image...");
       
-      // Fix orientation and decode image
-      print("DEBUG: Decoding and fixing orientation...");
       final decodedImage = await _faceService.processImage(image.path);
       
       if (decodedImage == null) {
-        print("DEBUG: decodedImage is NULL");
         setState(() {
           _status = "Failed to process image format.";
           _isBusy = false;
         });
         return;
       }
-      print("DEBUG: Image decoded. Size: ${decodedImage.width}x${decodedImage.height}");
 
-      print("DEBUG: Creating InputImage for ML Kit...");
       final inputImage = InputImage.fromFilePath(image.path);
-      
-      // Small delay to ensure file is accessible
-      await Future.delayed(Duration(milliseconds: 200));
+      await Future.delayed(const Duration(milliseconds: 200));
 
       setState(() => _status = "Detecting faces...");
-      print("DEBUG: Detecting faces...");
       final faces = await _faceService.detectFaces(inputImage);
-      print("DEBUG: Faces detected: ${faces.length}");
       
       if (faces.isEmpty) {
         setState(() {
@@ -111,37 +120,32 @@ class _FaceRegistrationScreenState extends State<FaceRegistrationScreen> {
       }
 
       setState(() => _status = "Extracting features...");
-      print("DEBUG: Extracting embeddings...");
       final embeddings = _faceService.extractEmbedding(decodedImage, faces.first);
 
       if (embeddings.isEmpty) {
-        print("DEBUG: Embeddings are empty");
         setState(() {
           _status = "Failed to extract features. Ensure good lighting.";
           _isBusy = false;
         });
         return;
       }
-      print("DEBUG: Embeddings extracted successfully. Length: ${embeddings.length}");
 
       setState(() => _status = "Saving to Firestore...");
-      print("DEBUG: Saving embeddings to Firestore for user: ${widget.username}");
       await _firestoreService.saveUserFace(widget.username, widget.password, embeddings);
-      print("DEBUG: Firestore save successful");
 
       Provider.of<PrefProvider>(context, listen: false).saveFaceRegistered(true);
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Face Registered Successfully!")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Face Registered Successfully!")));
       
       Navigator.of(context).pushNamedAndRemoveUntil(DashboardScreen.routeName, (route) => false);
 
-    } catch (e, stacktrace) {
-      print("DEBUG: CRITICAL ERROR during capture/registration: $e");
-      print("DEBUG: Stacktrace: $stacktrace");
-      setState(() {
-        _status = "Error: $e";
-        _isBusy = false;
-      });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _status = "Error: $e";
+          _isBusy = false;
+        });
+      }
     }
   }
 
@@ -153,12 +157,45 @@ class _FaceRegistrationScreenState extends State<FaceRegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (kIsWeb) {
+      return Scaffold(
+        appBar: AppBar(title: const Text("Face Registration")),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.phonelink_erase_rounded, size: 80, color: Colors.grey),
+              const SizedBox(height: 20),
+              const Text(
+                "Feature Not Supported",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 40),
+                child: Text(
+                  "Face registration is currently only supported on Android and iOS devices. Please use the mobile app to register your face.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Go Back"),
+              )
+            ],
+          ),
+        ),
+      );
+    }
+
     if (_cameraController == null || !_cameraController!.value.isInitialized) {
-      return Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text("Face Registration")),
+      appBar: AppBar(title: const Text("Face Registration")),
       body: Column(
         children: [
           Expanded(
@@ -181,17 +218,17 @@ class _FaceRegistrationScreenState extends State<FaceRegistrationScreen> {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                Text(_status, textAlign: TextAlign.center, style: TextStyle(fontSize: 16)),
-                SizedBox(height: 20),
+                Text(_status, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16)),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
                     if (!_isBusy) _captureAndRegister();
                   },
-                  child: _isBusy ? CircularProgressIndicator(color: Colors.white) : Text("Register Face"),
                   style: ElevatedButton.styleFrom(
-                    minimumSize: Size(double.infinity, 50),
+                    minimumSize: const Size(double.infinity, 50),
                     backgroundColor: Colors.red,
                   ),
+                  child: _isBusy ? const CircularProgressIndicator(color: Colors.white) : const Text("Register Face"),
                 ),
               ],
             ),
@@ -201,3 +238,4 @@ class _FaceRegistrationScreenState extends State<FaceRegistrationScreen> {
     );
   }
 }
+

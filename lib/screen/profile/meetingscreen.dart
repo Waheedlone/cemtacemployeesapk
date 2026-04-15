@@ -23,13 +23,19 @@ class MeetingState extends State<MeetingScreen> {
   }
 
   Future<String> getMeetingList() async {
-    setState(() async {
+    setState(() {
       isLoading = true;
-      EasyLoading.show(status: "Loading",maskType: EasyLoadingMaskType.black);
-      await Provider.of<MeetingProvider>(context, listen: false).getMeetingList();
-      isLoading = false;
-      EasyLoading.dismiss(animation: true);
     });
+    EasyLoading.show(status: "Loading", maskType: EasyLoadingMaskType.black);
+    try {
+      await Provider.of<MeetingProvider>(context, listen: false).getMeetingList();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    setState(() {
+      isLoading = false;
+    });
+    EasyLoading.dismiss(animation: true);
 
     return "Loaded";
   }

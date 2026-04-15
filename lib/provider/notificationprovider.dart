@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 
 import 'package:cnattendance/data/source/datastore/preferences.dart';
 import 'package:cnattendance/data/source/network/model/notification/NotifiactionDomain.dart';
@@ -140,8 +140,10 @@ class NotificationProvider extends ChangeNotifier {
 
   /// Full fetch for the notification list screen.
   Future<NotificationResponse> getNotification() async {
-    _isLoading = true;
-    notifyListeners();
+    if (hasListeners) {
+      _isLoading = true;
+      notifyListeners();
+    }
 
     final uri = Uri.parse(Constant.NOTIFICATION_URL).replace(queryParameters: {
       'page': page.toString(),
@@ -173,8 +175,10 @@ class NotificationProvider extends ChangeNotifier {
         throw responseData['message'];
       }
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (hasListeners) {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
   }
 
@@ -209,6 +213,8 @@ class NotificationProvider extends ChangeNotifier {
     }
 
     if (data.isNotEmpty) page++;
-    notifyListeners();
+    if (hasListeners) {
+      notifyListeners();
+    }
   }
 }

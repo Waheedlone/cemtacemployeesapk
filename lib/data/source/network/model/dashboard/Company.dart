@@ -7,8 +7,8 @@ class Company {
   factory Company.fromJson(dynamic json) {
     return Company(
         id: json['id'],
-        name: json['name'].toString() ?? "",
-        weekend: json['weekend']
+        name: json['name']?.toString() ?? "",
+        weekend: json['weekend'] ?? []
     );
   }
 

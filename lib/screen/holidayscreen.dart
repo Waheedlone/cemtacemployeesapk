@@ -57,18 +57,52 @@ class _HolidayScreenState extends State<HolidayScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: ToggleHoliday(),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: provider.holidayList.length,
-                    itemBuilder: (context, index) {
-                      final holiday = provider.holidayList[index];
-                      return Container(
-                        color: Colors.white,
-                        child: HolidayRow(holiday),
-                      );
-                    },
-                  ),
-                ),
+                provider.holidayList.isEmpty
+                    ? Expanded(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.calendar_today_outlined,
+                                size: 80,
+                                color: Colors.grey.shade300,
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                provider.toggleValue == 0
+                                    ? "No upcoming holidays found"
+                                    : "No past holidays found",
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                "Enjoy your working days!",
+                                style: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : Expanded(
+                        child: ListView.builder(
+                          itemCount: provider.holidayList.length,
+                          itemBuilder: (context, index) {
+                            final holiday = provider.holidayList[index];
+                            return Container(
+                              color: Colors.white,
+                              child: HolidayRow(holiday),
+                            );
+                          },
+                        ),
+                      ),
               ],
             ),
     );
