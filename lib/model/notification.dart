@@ -6,6 +6,8 @@ class Notification {
   int day;
   DateTime date;
   bool isMeeting;
+  String type;
+  String? notificationForId;
 
   Notification(
       {required this.id,
@@ -14,5 +16,7 @@ class Notification {
       required this.month,
       required this.day,
       required this.date,
-      this.isMeeting = false});
+      this.isMeeting = false,
+      this.type = "",
+      this.notificationForId});
 }

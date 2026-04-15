@@ -208,6 +208,8 @@ class NotificationProvider extends ChangeNotifier {
           month: DateFormat("MMM").format(parsedDate),
           day: parsedDate.day,
           date: parsedDate,
+          type: item.type,
+          notificationForId: item.notificationForId,
         ));
       }
     }

@@ -55,7 +55,7 @@ class MoreScreen extends StatelessWidget {
                   Services('Change Password', Icons.lock_outline, ChangePasswordScreen()),
            //       Services('Meeting', Icons.calendar_today_outlined, MeetingScreen()),
                   Services('Holiday', Icons.card_giftcard_outlined, HolidayScreen()),
-                  Services('Team Sheet', Icons.group_outlined, TeamSheetScreen()),
+//                  Services('Team Sheet', Icons.group_outlined, TeamSheetScreen()),
                    Services('Leave Calendar', Icons.calendar_month_outlined, LeaveCalendarScreen()),
                   Services('Notices', Icons.notifications_outlined, NoticeScreen()),
 //                  Services('Daily Site Entry', Icons.edit_note, DailyEntryScreen()),
