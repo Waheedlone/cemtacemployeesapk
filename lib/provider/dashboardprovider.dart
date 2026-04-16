@@ -66,6 +66,7 @@ class DashboardProvider with ChangeNotifier {
   final Map<String, String> _officeTime = {
     'start_time': '',
     'end_time': '',
+    'shift_name': 'Schedule', 
   };
 
   Map<String, String> get officeTime {
@@ -293,6 +294,7 @@ class DashboardProvider with ChangeNotifier {
     if (officeTimeObj != null) {
       _officeTime.update('start_time', (value) => officeTimeObj.startTime ?? '');
       _officeTime.update('end_time', (value) => officeTimeObj.endTime ?? '');
+      _officeTime.update('shift_name', (value) => officeTimeObj.shiftName ?? 'Schedule', ifAbsent: () => officeTimeObj.shiftName ?? 'Schedule');
     }
     if (hasListeners) {
       notifyListeners();

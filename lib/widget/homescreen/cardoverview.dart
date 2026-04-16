@@ -10,14 +10,8 @@ class CardOverView extends StatelessWidget {
  
   @override
   Widget build(BuildContext context) {
-    Color primaryColor;
- 
-    // Strict Project Color Theme (Red #ED1C24 and Deep Blue #00002B)
-    if (type == 'Request' || type == 'Requisitions Request' || type == 'Shift Handover') {
-      primaryColor = HexColor('#ED1C24'); // Brand Red
-    } else {
-      primaryColor = HexColor('#00002B'); // Brand Deep Blue
-    }
+    // Using the Brand Red design cleanly across all dashboard cards as requested
+    Color primaryColor = HexColor('#ED1C24');
  
     return TweenAnimationBuilder(
       duration: const Duration(milliseconds: 600),

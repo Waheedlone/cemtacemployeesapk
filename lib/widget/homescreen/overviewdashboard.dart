@@ -66,10 +66,6 @@ class OverviewDashboard extends StatelessWidget {
       );
     }
 
-    final String shiftTimeList = dashBoardProvider.officeTime['start_time']!.isNotEmpty && dashBoardProvider.officeTime['end_time']!.isNotEmpty
-        ? '${dashBoardProvider.officeTime['start_time']} - ${dashBoardProvider.officeTime['end_time']}'
-        : 'Schedule';
-
     final List<Map<String, dynamic>> overviewItems = [
       {'type': 'Present', 'value': _overview['present'] ?? '0', 'icon': Icons.business_center},
       {'type': 'Holidays', 'value': _overview['holiday'] ?? '0', 'icon': Icons.card_giftcard},
@@ -80,7 +76,7 @@ class OverviewDashboard extends StatelessWidget {
       {'type': 'Substitution', 'value': _overview['substitution'] ?? '0', 'icon': Icons.swap_horiz},
       {'type': 'Shift Handover', 'value': _overview['shift_handover'] ?? '0', 'icon': Icons.sync_alt},
       {'type': 'Overtime', 'value': _overview['overtime'] ?? '0', 'icon': Icons.more_time},
-      {'type': 'Shift Roster', 'value': shiftTimeList, 'icon': Icons.access_time},
+      {'type': 'Shift Roster', 'value': dashBoardProvider.officeTime['shift_name'] ?? 'Schedule', 'icon': Icons.calendar_view_month},
       {'type': 'Admin Dashboard', 'value': 'Login', 'icon': Icons.admin_panel_settings},
     ];
 

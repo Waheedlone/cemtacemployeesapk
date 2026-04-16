@@ -126,6 +126,14 @@ class _FaceVerificationScreenState extends State<FaceVerificationScreen> {
         return;
       }
 
+      if (faces.length > 1) {
+        setState(() {
+          _status = "Multiple faces detected. Ensure only one person is in frame.";
+          _isBusy = false;
+        });
+        return;
+      }
+
       setState(() => _status = "Comparing faces...");
       print("DEBUG: Extracting current embeddings...");
       final currentEmbeddings = _faceService.extractEmbedding(decodedImage, faces.first);

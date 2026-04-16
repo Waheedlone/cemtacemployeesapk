@@ -1,5 +1,6 @@
 import 'package:cnattendance/data/source/network/model/shiftroster/ShiftRoster.dart';
 import 'package:cnattendance/provider/shiftrosterprovider.dart';
+import 'package:cnattendance/provider/dashboardprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
@@ -276,8 +277,19 @@ class _ShiftRosterScreenState extends State<ShiftRosterScreen>
         ? shift.day.substring(0, 3).toUpperCase()
         : (dateObj != null ? DateFormat('EEE').format(dateObj).toUpperCase() : '---');
 
-    final hasTime = (shift.openingTime != null && shift.openingTime!.isNotEmpty) ||
-        (shift.closingTime != null && shift.closingTime!.isNotEmpty);
+    final dashboardProvider = Provider.of<DashboardProvider>(context, listen: false);
+    final String fallbackOpening = dashboardProvider.officeTime['start_time'] ?? '';
+    final String fallbackClosing = dashboardProvider.officeTime['end_time'] ?? '';
+
+    final String finalOpening = (shift.openingTime != null && shift.openingTime!.isNotEmpty) 
+        ? shift.openingTime! 
+        : fallbackOpening;
+        
+    final String finalClosing = (shift.closingTime != null && shift.closingTime!.isNotEmpty) 
+        ? shift.closingTime! 
+        : fallbackClosing;
+
+    final hasTime = finalOpening.isNotEmpty || finalClosing.isNotEmpty;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -379,7 +391,7 @@ class _ShiftRosterScreenState extends State<ShiftRosterScreen>
                         Icon(Icons.access_time_rounded, size: 13, color: Colors.grey.shade400),
                         const SizedBox(width: 4),
                         Text(
-                          '${shift.openingTime ?? "--"} – ${shift.closingTime ?? "--"}',
+                          '$finalOpening – $finalClosing',
                           style: TextStyle(
                             color: Colors.grey.shade500,
                             fontSize: 12,
