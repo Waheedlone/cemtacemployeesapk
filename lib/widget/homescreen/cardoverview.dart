@@ -48,7 +48,12 @@ class CardOverView extends StatelessWidget {
             final double iconSize = (constraints.maxWidth * 0.24).clamp(32.0, 48.0);
             final double circlePadding = (constraints.maxWidth * 0.05).clamp(10.0, 16.0);
             
-            final double valueSize = (constraints.maxWidth * 0.2).clamp(18.0, 28.0);
+            bool isNumeric = double.tryParse(value.replaceAll(',', '')) != null;
+            
+            final double valueSize = isNumeric 
+                ? (constraints.maxWidth * 0.2).clamp(18.0, 28.0)
+                : (constraints.maxWidth * 0.12).clamp(13.0, 16.0);
+                
             final double typeSize = (constraints.maxWidth * 0.1).clamp(11.0, 14.0);
 
             return Padding(
