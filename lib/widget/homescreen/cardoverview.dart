@@ -11,15 +11,12 @@ class CardOverView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color primaryColor;
-    List<Color> gradientColors;
  
     // Strict Project Color Theme (Red #ED1C24 and Deep Blue #00002B)
     if (type == 'Request' || type == 'Requisitions Request' || type == 'Shift Handover') {
       primaryColor = HexColor('#ED1C24'); // Brand Red
-      gradientColors = [HexColor('#ED1C24').withOpacity(0.08), Colors.white];
     } else {
       primaryColor = HexColor('#00002B'); // Brand Deep Blue
-      gradientColors = [HexColor('#00002B').withOpacity(0.08), Colors.white];
     }
  
     return TweenAnimationBuilder(
@@ -36,68 +33,85 @@ class CardOverView extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: gradientColors,
-          ),
-          borderRadius: BorderRadius.circular(24),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: primaryColor.withOpacity(0.1),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              spreadRadius: 2,
+              offset: const Offset(0, 4),
             ),
           ],
           border: Border.all(
-            color: primaryColor.withOpacity(0.15),
+            color: Colors.grey.withOpacity(0.15),
             width: 1,
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  icon,
-                  size: 26,
-                  color: primaryColor,
-                ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Increased icon size and optimized padding to make the icon pop more and match the circle better
+            final double iconSize = (constraints.maxWidth * 0.24).clamp(32.0, 48.0);
+            final double circlePadding = (constraints.maxWidth * 0.05).clamp(10.0, 16.0);
+            
+            final double valueSize = (constraints.maxWidth * 0.2).clamp(18.0, 28.0);
+            final double typeSize = (constraints.maxWidth * 0.1).clamp(11.0, 14.0);
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(circlePadding),
+                    decoration: BoxDecoration(
+                      color: primaryColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      icon,
+                      size: iconSize,
+                      color: primaryColor,
+                    ),
+                  ),
+                  SizedBox(height: constraints.maxHeight * 0.05),
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        value,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: HexColor('#00002B'),
+                          fontSize: valueSize,
+                          fontFamily: 'GoogleSans',
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        type,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: typeSize,
+                          fontWeight: FontWeight.w600,
+                          height: 1.1,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              Text(
-                value,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: HexColor('#00002B'),
-                  fontSize: 24,
-                  fontFamily: 'Outfit',
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                type,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: HexColor('#00002B').withOpacity(0.8),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  height: 1.1,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

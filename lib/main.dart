@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:cnattendance/utils/ssl_helper.dart';
 
@@ -128,6 +129,7 @@ void main() async {
 Future<void> _messageHandler(RemoteMessage message) async {
   // Ensure Flutter bindings are initialised for this isolate
   WidgetsFlutterBinding.ensureInitialized();
+  DartPluginRegistrant.ensureInitialized();
   print("Background message received: ${message.messageId}");
 
   // Initialise Firebase in this isolate if needed
@@ -150,13 +152,19 @@ Future<void> _messageHandler(RemoteMessage message) async {
     print("Background Firebase/Notification initialization error: $e");
   }
 
-  // Show a heads-up system notification with sound using AwesomeNotifications
-  // Note: NotificationService handles the AwesomeNotifications call
-  await NotificationService.showFromFCM(
-    title: message.notification?.title ?? message.data['title'] ?? 'Digital HR',
-    body: message.notification?.body ?? message.data['body'] ?? 'You have a new notification',
-    payload: message.data.map((key, value) => MapEntry(key, value.toString())),
-  );
+  // If the message contains a notification payload, FCM handles it automatically.
+  // Showing it again via AwesomeNotifications would create a duplicate.
+  // We only show it manually if it's a data-only message.
+  if (message.notification == null) {
+    // Show a heads-up system notification with sound using AwesomeNotifications
+    await NotificationService.showFromFCM(
+      title: message.data['title'] ?? 'Digital HR',
+      body: message.data['body'] ?? 'You have a new notification',
+      payload: message.data.map((key, value) => MapEntry(key, value.toString())),
+    );
+  } else {
+    print("FCM notification payload exists, skipping AwesomeNotification to prevent duplicate.");
+  }
 }
 
 void configLoading() {

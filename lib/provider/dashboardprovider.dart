@@ -63,6 +63,15 @@ class DashboardProvider with ChangeNotifier {
     return _attendanceList;
   }
 
+  final Map<String, String> _officeTime = {
+    'start_time': '',
+    'end_time': '',
+  };
+
+  Map<String, String> get officeTime {
+    return _officeTime;
+  }
+
   final List<int> _weeklyReport = [];
 
   bool get isCheckIn {
@@ -131,6 +140,7 @@ class DashboardProvider with ChangeNotifier {
 
         updateAttendanceStatus(dashboardResponse.data.employeeTodayAttendance);
         updateOverView(dashboardResponse.data.overview);
+        updateOfficeTime(dashboardResponse.data.officeTime);
 
         _notificationCount = dashboardResponse.data.notification_count;
 
@@ -167,6 +177,7 @@ class DashboardProvider with ChangeNotifier {
         
         updateAttendanceStatus(dashboardResponse.data.employeeTodayAttendance);
         updateOverView(dashboardResponse.data.overview);
+        updateOfficeTime(dashboardResponse.data.officeTime);
         _notificationCount = dashboardResponse.data.notification_count;
         makeWeeklyReport(dashboardResponse.data.employeeWeeklyReport);
 
@@ -273,6 +284,16 @@ class DashboardProvider with ChangeNotifier {
     _overviewList.update(
         'overtime', (value) => overview.total_overtimes.toString());
  
+    if (hasListeners) {
+      notifyListeners();
+    }
+  }
+
+  void updateOfficeTime(var officeTimeObj) {
+    if (officeTimeObj != null) {
+      _officeTime.update('start_time', (value) => officeTimeObj.startTime ?? '');
+      _officeTime.update('end_time', (value) => officeTimeObj.endTime ?? '');
+    }
     if (hasListeners) {
       notifyListeners();
     }

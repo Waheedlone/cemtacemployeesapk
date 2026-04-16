@@ -40,8 +40,8 @@ class ShiftRosterData {
       date: json['date'] ?? "",
       day: json['day'] ?? "",
       shiftName: json['shift_name'] ?? "",
-      openingTime: json['opening_time'],
-      closingTime: json['closing_time'],
+      openingTime: json['opening_time'] ?? json['start_time'],
+      closingTime: json['closing_time'] ?? json['end_time'],
       isWeeklyOff: json['is_weekly_off'] ?? false,
       isCustomAssignment: json['is_custom_assignment'] ?? false,
     );
