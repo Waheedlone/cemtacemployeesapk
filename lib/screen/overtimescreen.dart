@@ -17,8 +17,10 @@ class _OvertimeScreenState extends State<OvertimeScreen> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      Provider.of<OvertimeProvider>(context, listen: false).fetchOvertimeRecords();
-      Provider.of<OvertimeProvider>(context, listen: false).fetchOvertimeForApproval();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Provider.of<OvertimeProvider>(context, listen: false).fetchOvertimeRecords();
+        Provider.of<OvertimeProvider>(context, listen: false).fetchOvertimeForApproval();
+      });
       _isInit = false;
     }
     super.didChangeDependencies();

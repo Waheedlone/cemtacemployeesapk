@@ -57,20 +57,26 @@ class NotificationService {
     required String body,
     Map<String, String>? payload,
   }) async {
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: Random().nextInt(100000),
-        channelKey: 'digital_hr_channel',
-        title: title,
-        body: body,
-        notificationLayout: NotificationLayout.Default,
-        category: NotificationCategory.Message,
-        payload: payload,
-        wakeUpScreen: true,
-        autoDismissible: true,
-        criticalAlert: true,
-      ),
-    );
+    print("NotificationService: Displaying notification from FCM - Title: $title");
+    try {
+      await AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: Random().nextInt(100000),
+          channelKey: 'digital_hr_channel',
+          title: title,
+          body: body,
+          notificationLayout: NotificationLayout.Default,
+          category: NotificationCategory.Message,
+          payload: payload,
+          wakeUpScreen: true,
+          autoDismissible: true,
+          criticalAlert: true,
+        ),
+      );
+      print("NotificationService: Notification displayed successfully.");
+    } catch (e) {
+      print("NotificationService: Failed to display notification: $e");
+    }
   }
 
   static Future<void> showNotification({

@@ -41,20 +41,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDJLHi8wmfsg037TteijTD20Fr1oyOwkJo',
-    appId: '1:329791479566:android:25e224fbedbc7eed3c415f',
-    messagingSenderId: '329791479566',
-    projectId: 'workermodelcemtacbiomatric',
-    storageBucket: 'workermodelcemtacbiomatric.firebasestorage.app',
+    apiKey: 'AIzaSyAe-o2eNyGbuqbCvmK7Pwmmd8YFs0vdur0',
+    appId: '1:52681180747:android:bf630d67a956ed0edbefce',
+    messagingSenderId: '52681180747',
+    projectId: 'employeecemtacfacedetection',
+    storageBucket: 'employeecemtacfacedetection.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAz9Z8OeJolwFzk5TvUD7waDEhpBH-k7Is',
-    appId: '1:329791479566:ios:e0cdede8975857833c415f',
-    messagingSenderId: '329791479566',
-    projectId: 'workermodelcemtacbiomatric',
-    storageBucket: 'workermodelcemtacbiomatric.firebasestorage.app',
-    iosBundleId: 'com.cninfotech.digitalhrs',
+    apiKey: 'AIzaSyCEVUNnmMmZq2Qj50G5eoTkVPTq647FdNg',
+    appId: '1:255239208693:ios:8b20b1a41e5a27fdb2cfbc',
+    messagingSenderId: '255239208693',
+    projectId: 'cn-attendance',
+    storageBucket: 'cn-attendance.appspot.com',
+    iosBundleId: 'com.example.cnattendance',
   );
 
   static const FirebaseOptions web = FirebaseOptions(

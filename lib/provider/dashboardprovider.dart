@@ -120,7 +120,7 @@ class DashboardProvider with ChangeNotifier {
     Preferences preferences = Preferences();
     String token = await preferences.getToken();
 
-    var fcm = await FirebaseMessaging.instance.getToken();
+    var fcm = await FirebaseMessaging.instance.getToken().timeout(const Duration(seconds: 5), onTimeout: () => null);
 
     Map<String, String> headers = {
       'Content-Type': 'application/json',

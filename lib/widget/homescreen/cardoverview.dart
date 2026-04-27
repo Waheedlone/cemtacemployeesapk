@@ -51,6 +51,7 @@ class CardOverView extends StatelessWidget {
             bool isNumeric = double.tryParse(value.replaceAll(',', '')) != null;
             
             final double valueSize = isNumeric 
+            
                 ? (constraints.maxWidth * 0.2).clamp(18.0, 28.0)
                 : (constraints.maxWidth * 0.12).clamp(13.0, 16.0);
                 
@@ -115,4 +116,4 @@ class CardOverView extends StatelessWidget {
       ),
     );
   }
-}
+}

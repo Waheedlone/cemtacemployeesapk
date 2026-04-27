@@ -46,8 +46,69 @@ class Services extends StatelessWidget {
           } else if (name == 'Log Out') {
             final dashboardProvider = Provider.of<DashboardProvider>(context, listen: false);
             if (dashboardProvider.isCheckIn) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Please check out before logging out.')));
+              showDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (BuildContext dialogContext) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    titlePadding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
+                    contentPadding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                    actionsPadding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    title: Row(
+                      children: const [
+                        Icon(Icons.warning_amber_rounded,
+                            color: Color(0xFFE53935), size: 28),
+                        SizedBox(width: 10),
+                        Text(
+                          'Check-Out Required',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1A1A2E),
+                          ),
+                        ),
+                      ],
+                    ),
+                    content: const Text(
+                      'You are currently checked in to an active shift. '
+                      'Please complete your check-out before logging out of the application.',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF555555),
+                        height: 1.5,
+                      ),
+                    ),
+                    actions: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.of(dialogContext).pop(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE53935),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            'Got It',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
               return;
             }
 

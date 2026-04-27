@@ -15,7 +15,9 @@ class _LeaveConfirmationScreenState extends State<LeaveConfirmationScreen> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      Provider.of<LeaveProvider>(context, listen: false).fetchLeaveForConfirmation();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Provider.of<LeaveProvider>(context, listen: false).fetchLeaveForConfirmation();
+      });
       _isInit = false;
     }
     super.didChangeDependencies();
