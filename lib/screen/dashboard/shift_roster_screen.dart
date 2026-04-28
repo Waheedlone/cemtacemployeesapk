@@ -72,8 +72,15 @@ class _ShiftRosterScreenState extends State<ShiftRosterScreen>
 
     return Scaffold(
       backgroundColor: const Color(0xFFF1F5F9),
-      body: CustomScrollView(
-        slivers: [
+      body: RefreshIndicator(
+        onRefresh: () async {
+          _fetchRoster();
+          // Small delay to let the animation start
+          await Future.delayed(const Duration(milliseconds: 500));
+        },
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
           // ─── Premium SliverAppBar ───────────────────────────────────────
           SliverAppBar(
             expandedHeight: 200,
@@ -219,6 +226,7 @@ class _ShiftRosterScreenState extends State<ShiftRosterScreen>
             ),
         ],
       ),
+     ),
     );
   }
 

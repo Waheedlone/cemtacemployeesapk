@@ -57,6 +57,7 @@ class DashboardProvider with ChangeNotifier {
     'production_hour': '0 hr 0 min ',
     'production-time': 0.0,
     'production_time_min': 0,
+    'last_sync_time': null,
   };
 
   Map<String, dynamic> get attendanceList {
@@ -243,6 +244,8 @@ class DashboardProvider with ChangeNotifier {
         'check-in', (value) => employeeTodayAttendance.checkInAt);
     _attendanceList.update(
         'production_time_min', (value) => employeeTodayAttendance.productionTime);
+    _attendanceList.update('last_sync_time', (value) => DateTime.now(),
+        ifAbsent: () => DateTime.now());
 
     Preferences().saveAttendanceStatus(
         employeeTodayAttendance.checkInAt, employeeTodayAttendance.checkOutAt);
@@ -266,9 +269,8 @@ class DashboardProvider with ChangeNotifier {
     _overviewList.update(
         'holiday', (value) => overview.totalHolidays.toString());
     
-    int remainingLeave = overview.totalPaidLeaves - overview.totalLeaveTaken;
     _overviewList.update(
-        'leave', (value) => (remainingLeave < 0 ? 0 : remainingLeave).toString());
+        'leave', (value) => overview.totalPaidLeaves.toString());
     
     _overviewList.update(
         'request', (value) => overview.totalPendingLeaves.toString());

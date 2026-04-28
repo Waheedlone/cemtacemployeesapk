@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cnattendance/utils/responsive.dart';
 import 'package:cnattendance/data/source/network/model/login/User.dart';
 import 'package:cnattendance/provider/dashboardprovider.dart';
@@ -19,22 +20,80 @@ class HomeScreen extends StatefulWidget {
   State<StatefulWidget> createState() => HomeScreenState();
 }
 
-class HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  Timer? _refreshTimer;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    
     // Listen for foreground FCM messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print("Foreground message received: ${message.notification?.title}");
       NotificationService.showFromFCM(
         title: message.notification?.title ?? message.data['title'] ?? 'Digital HR',
-        body: message.notification?.body ?? message.data['body'] ?? 'New notification',
+        body: message.notification?.body ?? message.data['body'] ?? message.data['message'] ?? 'New notification',
         payload: message.data.map((key, value) => MapEntry(key, value.toString())),
       );
       
+      // If the message is a sync trigger, reload dashboard
+      if (message.data['type'] == 'sync' || message.data['type'] == 'attendance_update') {
+        loadDashboard();
+      }
+
       // Update badge count immediately
       Provider.of<NotificationProvider>(context, listen: false).increment();
     });
+
+    // Handle taps when app is in background (but not closed)
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("Notification tapped while in background: ${message.data}");
+      // Force refresh on tap
+      loadDashboard();
+    });
+
+    // Handle case where app was opened from a terminated state via notification
+    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null) {
+        print("App opened from terminated state via notification: ${message.data}");
+        loadDashboard();
+      }
+    });
+
+    // Start periodic sync every 60 seconds
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _stopTimer();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      print("App resumed, refreshing dashboard...");
+      loadDashboard();
+      _startTimer();
+    } else if (state == AppLifecycleState.paused) {
+      _stopTimer();
+    }
+  }
+
+  void _startTimer() {
+    _stopTimer();
+    _refreshTimer = Timer.periodic(const Duration(seconds: 60), (timer) {
+      print("Periodic sync triggered...");
+      loadDashboard();
+    });
+  }
+
+  void _stopTimer() {
+    _refreshTimer?.cancel();
+    _refreshTimer = null;
   }
 
   @override

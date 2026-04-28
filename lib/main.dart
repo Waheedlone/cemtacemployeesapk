@@ -129,41 +129,31 @@ void main() async {
 Future<void> _messageHandler(RemoteMessage message) async {
   // Ensure Flutter bindings are initialised for this isolate
   WidgetsFlutterBinding.ensureInitialized();
-  DartPluginRegistrant.ensureInitialized();
-  print("Background message received: ${message.messageId}");
+  
+  print("FCM Background: Message received ${message.messageId}");
 
   // Initialise Firebase in this isolate if needed
   try {
-    if (Firebase.apps.isEmpty) {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-    }
-    // Also initialize AwesomeNotifications in this isolate
-    await NotificationService.initialize();
-
-    AwesomeNotifications().setListeners(
-      onActionReceivedMethod: NotificationService.onActionReceivedMethod,
-      onNotificationCreatedMethod: NotificationService.onNotificationCreatedMethod,
-      onNotificationDisplayedMethod: NotificationService.onNotificationDisplayedMethod,
-      onDismissActionReceivedMethod: NotificationService.onDismissActionReceivedMethod,
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
     );
+    
+    // Re-initialize notification service in this isolate
+    await NotificationService.initialize();
   } catch (e) {
-    print("Background Firebase/Notification initialization error: $e");
+    print("FCM Background: Error during initialization $e");
   }
 
-  // If the message contains a notification payload, FCM handles it automatically.
-  // Showing it again via AwesomeNotifications would create a duplicate.
-  // We only show it manually if it's a data-only message.
+  // Handle data-only messages
   if (message.notification == null) {
-    // Show a heads-up system notification with sound using AwesomeNotifications
+    print("FCM Background: Showing local notification from data payload");
     await NotificationService.showFromFCM(
       title: message.data['title'] ?? 'Digital HR',
-      body: message.data['body'] ?? 'You have a new notification',
+      body: message.data['body'] ?? message.data['message'] ?? 'You have a new update',
       payload: message.data.map((key, value) => MapEntry(key, value.toString())),
     );
   } else {
-    print("FCM notification payload exists, skipping AwesomeNotification to prevent duplicate.");
+    print("FCM Background: System handled notification, skipping AwesomeNotifications");
   }
 }
 

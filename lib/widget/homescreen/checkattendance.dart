@@ -64,15 +64,11 @@ class CheckAttendanceState extends State<CheckAttendance> {
             try {
               final String checkInAt = attendanceList['check-in'] ?? '-';
               final int initialMinutes = attendanceList['production_time_min'] ?? 0;
+              final DateTime? lastSyncTime = attendanceList['last_sync_time'];
               
-              if (checkInAt != '-' && checkInAt != '') {
-                final checkInTime = DateFormat("hh:mm a").parse(checkInAt);
-                final checkInDateTime = DateTime(now.year, now.month, now.day, checkInTime.hour, checkInTime.minute);
-                
-                int elapsedSeconds = now.difference(checkInDateTime).inSeconds;
-                if (elapsedSeconds < 0) elapsedSeconds = 0;
-                
-                int totalSeconds = (initialMinutes * 60) + elapsedSeconds;
+              if (checkInAt != '-' && checkInAt != '' && lastSyncTime != null) {
+                int elapsedSecondsSinceSync = now.difference(lastSyncTime).inSeconds;
+                int totalSeconds = (initialMinutes * 60) + elapsedSecondsSinceSync;
                 
                 int hours = totalSeconds ~/ 3600;
                 int minutes = (totalSeconds % 3600) ~/ 60;

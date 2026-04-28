@@ -69,7 +69,7 @@ class OverviewDashboard extends StatelessWidget {
     final List<Map<String, dynamic>> overviewItems = [
       {'type': 'Present', 'value': _overview['present'] ?? '0', 'icon': Icons.business_center},
       {'type': 'Holidays', 'value': _overview['holiday'] ?? '0', 'icon': Icons.card_giftcard},
-      {'type': 'Leave', 'value': _overview['leave'] ?? '0', 'icon': Icons.person_off},
+      {'type': 'Assigned Leave', 'value': _overview['leave'] ?? '0', 'icon': Icons.person_off},
       {'type': 'Request', 'value': _overview['request'] ?? '0', 'icon': Icons.pending_actions},
       {'type': 'Gate-Pass', 'value': _overview['gate_pass'] ?? '0', 'icon': Icons.local_activity},
       {'type': 'Requisitions Request', 'value': _overview['internal_requisition'] ?? '0', 'icon': Icons.assignment_late},
@@ -123,7 +123,7 @@ class OverviewDashboard extends StatelessWidget {
           itemBuilder: (context, index) {
             return GestureDetector(
               onTap: () {
-                if (overviewItems[index]['type'] == 'Leave') {
+                if (overviewItems[index]['type'] == 'Assigned Leave') {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => LeaveCalendarScreen()));
                 } else if (overviewItems[index]['type'] == 'Holidays') {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => HolidayScreen()));

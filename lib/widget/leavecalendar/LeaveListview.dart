@@ -9,22 +9,31 @@ class LeaveListview extends StatelessWidget {
     final leaveList = provider.employeeLeaveByDayList;
 
     if (leaveList.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.event_busy_outlined, size: 60, color: Colors.grey[300]),
-              const SizedBox(height: 10),
-              const Text("No leaves for this date", style: TextStyle(color: Colors.grey)),
-            ],
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.event_busy_outlined, size: 60, color: Colors.grey[300]),
+                    const SizedBox(height: 10),
+                    const Text("No leaves for this date", style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
+        ],
       );
     }
 
     return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(top: 10),
       itemCount: leaveList.length,
       itemBuilder: (context, index) {

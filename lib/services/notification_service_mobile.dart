@@ -50,6 +50,12 @@ class NotificationService {
   /// Use this method to detect when the user taps on a notification or action button
   @pragma("vm:entry-point")
   static Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
+    // Navigate to Home or specific screen when tapped
+    if (receivedAction.buttonKeyInput.isEmpty) {
+      // If the app is already in the background, this will bring it to the front
+      // You can also add specific navigation logic here based on payload
+      print("Notification tapped: ${receivedAction.payload}");
+    }
   }
 
   static Future<void> showFromFCM({

@@ -54,14 +54,17 @@ class _LeaveCalendarScreenContentState extends State<LeaveCalendarScreenContent>
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                LeaveCalendarView(),
-                Expanded(child: LeaveListview()),
-              ],
-            ),
+      body: RefreshIndicator(
+        onRefresh: _fetchLeaveData,
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  LeaveCalendarView(),
+                  Expanded(child: LeaveListview()),
+                ],
+              ),
+      ),
     );
   }
 }
