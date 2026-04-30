@@ -19,29 +19,36 @@ class OfficialDetailsScreen extends StatelessWidget {
         title: const Text("Official Details", style: TextStyle(color: Colors.black)),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionTitle("Employment Information"),
-            const SizedBox(height: 20),
-            _buildInfoCard([
-              _buildDetailRow(Icons.work_outline, "Designation", userProfile.post),
-              _buildDetailRow(Icons.business_outlined, "Department", "IT Department"), // Placeholder if not in profile model
-              _buildDetailRow(Icons.location_on_outlined, "Branch", "Main Office"), // Placeholder
-              _buildDetailRow(Icons.badge_outlined, "Employee ID", "#${userProfile.id}"),
-              _buildDetailRow(Icons.calendar_month_outlined, "Joined Date", userProfile.joinedDate),
-            ]),
-            const SizedBox(height: 30),
-            _buildSectionTitle("Schedule & Role"),
-            const SizedBox(height: 20),
-            _buildInfoCard([
-              _buildDetailRow(Icons.timer_outlined, "Office Time", "09:00 AM - 06:00 PM"), // Placeholder
-              _buildDetailRow(Icons.assignment_ind_outlined, "Employment Type", "Full Time"), // Placeholder
-              _buildDetailRow(Icons.security_outlined, "Role", "Employee"),
-            ]),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Provider.of<ProfileProvider>(context, listen: false).getProfile();
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionTitle("Employment Information"),
+              const SizedBox(height: 20),
+              _buildInfoCard([
+                _buildDetailRow(Icons.work_outline, "Designation", userProfile.post),
+                _buildDetailRow(Icons.business_outlined, "Department", userProfile.department),
+                _buildDetailRow(Icons.location_on_outlined, "Branch", userProfile.branch),
+                if (userProfile.employeeCode.isNotEmpty)
+                  _buildDetailRow(Icons.badge_outlined, "Employee Code", userProfile.employeeCode),
+                _buildDetailRow(Icons.calendar_month_outlined, "Joined Date", userProfile.joinedDate),
+              ]),
+              const SizedBox(height: 30),
+              _buildSectionTitle("Schedule & Role"),
+              const SizedBox(height: 20),
+              _buildInfoCard([
+                _buildDetailRow(Icons.timer_outlined, "Office Time", "09:00 AM - 06:00 PM"), // Placeholder
+                _buildDetailRow(Icons.assignment_ind_outlined, "Employment Type", "Full Time"), // Placeholder
+                _buildDetailRow(Icons.security_outlined, "Role", "Employee"),
+              ]),
+            ],
+          ),
         ),
       ),
     );

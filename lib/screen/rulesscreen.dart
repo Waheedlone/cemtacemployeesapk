@@ -26,24 +26,32 @@ class _RulesScreenState extends State<RulesScreen> {
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: FutureBuilder<CompanyRulesReponse>(
-        future: _rulesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (snapshot.hasData && snapshot.data!.data.isNotEmpty) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Html(
-                data: snapshot.data!.data.first.description,
-              ),
-            );
-          } else {
-            return Center(child: Text("No rules found."));
-          }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {
+            _rulesFuture = CompanyRuleRepository().getContent();
+          });
         },
+        child: FutureBuilder<CompanyRulesReponse>(
+          future: _rulesFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text("Error: ${snapshot.error}"));
+            } else if (snapshot.hasData && snapshot.data!.data.isNotEmpty) {
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16.0),
+                child: Html(
+                  data: snapshot.data!.data.first.description,
+                ),
+              );
+            } else {
+              return Center(child: Text("No rules found."));
+            }
+          },
+        ),
       ),
     );
   }

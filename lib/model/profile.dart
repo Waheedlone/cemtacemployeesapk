@@ -12,6 +12,9 @@ class Profile {
   String bankName;
   String bankNumber;
   String joinedDate;
+  String employeeCode;
+  String department;
+  String branch;
 
   Profile(
       {required this.id,
@@ -26,5 +29,8 @@ class Profile {
       required this.address,
       required this.bankName,
       required this.bankNumber,
-      required this.joinedDate});
+      required this.joinedDate,
+      required this.employeeCode,
+      required this.department,
+      required this.branch});
 }

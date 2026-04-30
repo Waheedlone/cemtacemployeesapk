@@ -79,16 +79,17 @@ class GatePassProvider with ChangeNotifier {
     try {
       final uri = Uri.parse(Constant.GATE_PASSES_URL);
       final token = await Preferences().getToken();
-      final headers = {
-        'Accept': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $token'
-      };
-      final body = {
-        'purpose': reason,
-        'time_out_date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
-        'time_out_time': time,
-      };
-      final response = await Connect().postResponse(uri.toString(), headers, body);
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer $token'
+    };
+    final body = {
+      'purpose': reason,
+      'time_out_date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      'time_out_time': time,
+    };
+    final response = await Connect().postResponse(uri.toString(), headers, json.encode(body));
       if (response.statusCode == 200 || response.statusCode == 201) {
         await fetchGatePasses();
         return true;

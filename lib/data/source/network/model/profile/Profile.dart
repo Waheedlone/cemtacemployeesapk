@@ -22,6 +22,7 @@ class Profile {
     required this.bankName,
     required this.bankAccountNo,
     required this.bankAccountType,
+    required this.employeeCode,
   });
 
   factory Profile.fromJson(dynamic json) {
@@ -48,6 +49,7 @@ class Profile {
       bankName: json['bank_name'].toString() ?? "",
       bankAccountNo: json['bank_account_no'].toString() ?? "",
       bankAccountType: json['bank_account_type'].toString() ?? "",
+      employeeCode: json['employee_code']?.toString() ?? "",
     );
   }
 
@@ -73,6 +75,7 @@ class Profile {
   String bankName;
   String bankAccountNo;
   String bankAccountType;
+  String employeeCode;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -98,6 +101,7 @@ class Profile {
     map['bank_name'] = bankName;
     map['bank_account_no'] = bankAccountNo;
     map['bank_account_type'] = bankAccountType;
+    map['employee_code'] = employeeCode;
     return map;
   }
 }

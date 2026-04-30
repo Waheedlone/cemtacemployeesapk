@@ -28,8 +28,13 @@ class SupportScreen extends StatelessWidget {
           )
         ],
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await model.getDepartments();
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: EdgeInsets.all(20),
         child: Form(
           key: model.form,
           child: Column(
@@ -175,6 +180,7 @@ class SupportScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

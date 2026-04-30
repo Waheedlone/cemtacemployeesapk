@@ -17,7 +17,10 @@ class Auth with ChangeNotifier {
     var uri = Uri.parse(Constant.LOGIN_URL);
     Log.d("Auth", "Login URL: ${Constant.LOGIN_URL}");
 
-    Map<String, String> headers = {"Accept": "application/json; charset=UTF-8"};
+    Map<String, String> headers = {
+      "Accept": "application/json; charset=UTF-8",
+      "Content-Type": "application/json"
+    };
 
     try {
       String? fcm;
@@ -39,13 +42,13 @@ class Auth with ChangeNotifier {
         deviceType = 'desktop';
       }
 
-      final response = await Connect().postResponse(uri.toString(), headers, {
+      final response = await Connect().postResponse(uri.toString(), headers, json.encode({
         'username': username,
         'password': password,
         'fcm_token': fcm ?? 'no_token',
         'device_type': deviceType,
         'uuid': await DeviceUUid().getUniqueDeviceId(),
-      });
+      }));
 
       final responseData = json.decode(response.body);
       if (response.statusCode == 200) {

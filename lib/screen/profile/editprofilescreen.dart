@@ -175,6 +175,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
             TextFormField(
               controller: _nameController,
               keyboardType: TextInputType.name,
+              readOnly: true,
               validator: (value) {
                 if (!validateField(value!)) {
                   return "Empty Field";

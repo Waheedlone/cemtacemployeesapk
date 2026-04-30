@@ -9,12 +9,17 @@ class ProjectList extends StatelessWidget {
     final ProjectListScreenController model = Get.find();
     return Obx(
       () => model.filteredList.isEmpty
-          ? SingleChildScrollView(
+          ? ListView(
               physics: AlwaysScrollableScrollPhysics(),
-              child: Container(),
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: Center(child: Text("No projects found", style: TextStyle(color: Colors.white))),
+                ),
+              ],
             )
           : ListView.builder(
-              primary: false,
+              physics: AlwaysScrollableScrollPhysics(),
               itemCount: model.filteredList.length,
               itemBuilder: (context, index) {
                 final item = model.filteredList[index];

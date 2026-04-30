@@ -95,6 +95,7 @@ class _NoticeScreenContentState extends State<NoticeScreenContent> {
           : RefreshIndicator(
               onRefresh: _fetchNotices,
               child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
                 controller: _scrollController,
                 itemCount: provider.notificationList.length + (_isFetchingMore ? 1 : 0),
                 itemBuilder: (context, index) {

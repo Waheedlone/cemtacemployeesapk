@@ -19,8 +19,13 @@ class PaySlipScreen extends StatelessWidget{
           title: Text('PaySlip'),
           elevation: 0,
         ),
-        body: SingleChildScrollView(
-          child: Container(
+        body: RefreshIndicator(
+          onRefresh: () async {
+            await Provider.of<PaySlipProvider>(context, listen: false).getPayslip();
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Container(
             height: MediaQuery.of(context).size.height,
             padding: EdgeInsets.all(20),
             child: Column(

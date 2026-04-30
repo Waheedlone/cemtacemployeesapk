@@ -1,4 +1,5 @@
 import 'package:cnattendance/model/notification.dart' as Not;
+import 'package:cnattendance/utils/string_utils.dart';
 import 'package:flutter/material.dart';
 
 class NoticeRow extends StatelessWidget {
@@ -48,7 +49,7 @@ class NoticeRow extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   Text(
-                    notice.description,
+                    StringUtils.stripHtml(notice.description),
                     style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],

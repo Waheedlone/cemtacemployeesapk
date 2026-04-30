@@ -26,7 +26,10 @@ class ProfileProvider with ChangeNotifier {
       address: '',
       bankName: '',
       bankNumber: '',
-      joinedDate: '');
+      joinedDate: '',
+      employeeCode: '',
+      department: '',
+      branch: '');
 
   up.Profile get profile {
     return _profile;
@@ -81,6 +84,9 @@ class ProfileProvider with ChangeNotifier {
     _profile.bankName = profile.bankName;
     _profile.bankNumber = profile.bankAccountNo;
     _profile.joinedDate = profile.joiningDate;
+    _profile.employeeCode = profile.employeeCode;
+    _profile.department = profile.department;
+    _profile.branch = profile.branch;
 
     notifyListeners();
   }

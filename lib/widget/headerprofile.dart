@@ -1,4 +1,4 @@
-﻿import 'package:cnattendance/provider/notificationprovider.dart';
+import 'package:cnattendance/provider/notificationprovider.dart';
 import 'package:cnattendance/provider/prefprovider.dart';
 import 'package:cnattendance/screen/profile/NotificationScreen.dart';
 import 'package:cnattendance/screen/profile/profilescreen.dart';
@@ -41,20 +41,27 @@ class HeaderState extends State<HeaderProfile> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(30),
-                  child: Image.network(
-                    provider.avatar,
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.asset(
-                        'assets/images/dummy_avatar.png',
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
-                      );
-                    },
-                  ),
+                  child: provider.avatar.isNotEmpty && provider.avatar.startsWith('http')
+                      ? Image.network(
+                          provider.avatar,
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              'assets/images/dummy_avatar.png',
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        )
+                      : Image.asset(
+                          'assets/images/dummy_avatar.png',
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                        ),
                 ),
                 SizedBox(width: 10),
                 Column(

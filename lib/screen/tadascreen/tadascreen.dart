@@ -31,8 +31,19 @@ class TadaScreen extends StatelessWidget {
               onRefresh: () {
                 return model.getTadaList();
               },
-              child: ListView.builder(
-                itemCount: model.tadaList.length,
+              child: model.tadaList.isEmpty
+                  ? ListView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          child: Center(child: Text("No TADA records found")),
+                        ),
+                      ],
+                    )
+                  : ListView.builder(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      itemCount: model.tadaList.length,
                 itemBuilder: (context, index) {
                   Tada item = model.tadaList[index];
                   return Card(

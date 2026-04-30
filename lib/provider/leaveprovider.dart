@@ -95,10 +95,10 @@ class LeaveProvider with ChangeNotifier {
 
     for (var leave in leaveList) {
       _leaveList.add(Leave(
-          id: int.parse(leave.leaveTypeId),
+          id: int.parse(leave.leaveTypeId.toString()),
           name: leave.leaveTypeName,
           allocated: leave.leaveTaken,
-          total: int.parse(leave.totalLeaveAllocated),
+          total: double.parse(leave.totalLeaveAllocated.toString()).toInt(),
           status: leave.leaveTypeStatus,
           isEarlyLeave: leave.earlyExit));
     }
@@ -169,25 +169,27 @@ class LeaveProvider with ChangeNotifier {
   }
 
   Future<IssueLeaveResponse> issueLeave(
-      String from, String to, String reason, int leaveId, {String? earlyExit}) async {
+      String from, String to, String reason, int leaveId, {String? earlyExit, int isHalfDay = 0}) async {
     var uri = Uri.parse(Constant.ISSUE_LEAVE);
 
     Preferences preferences = Preferences();
     String token = await preferences.getToken();
 
     Map<String, String> headers = {
+      'Content-Type': 'application/json',
       'Accept': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer $token'
     };
 
     try {
-      final response = await Connect().postResponse(uri.toString(), headers, {
+      final response = await Connect().postResponse(uri.toString(), headers, json.encode({
         'leave_from': from,
         'leave_to': to,
-        'leave_type_id': leaveId.toString(),
+        'leave_type_id': leaveId,
         'reasons': reason,
+        'is_half_day': isHalfDay,
         if (earlyExit != null) 'early_exit': earlyExit,
-      });
+      }));
 
       final responseData = json.decode(response.body);
       if (response.statusCode == 200) {
@@ -212,12 +214,13 @@ class LeaveProvider with ChangeNotifier {
     String token = await preferences.getToken();
 
     Map<String, String> headers = {
+      'Content-Type': 'application/json',
       'Accept': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer $token'
     };
 
     try {
-      final response = await Connect().postResponse(uri.toString(), headers, {'leave_id': leaveId.toString()});
+      final response = await Connect().postResponse(uri.toString(), headers, json.encode({'leave_id': leaveId}));
 
       final responseData = json.decode(response.body);
       if (response.statusCode == 200) {

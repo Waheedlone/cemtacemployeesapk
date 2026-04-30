@@ -23,7 +23,10 @@ class EmployeeDetailController extends GetxController{
       address: '',
       bankName: '',
       bankNumber: '',
-      joinedDate: '').obs;
+      joinedDate: '',
+      employeeCode: '',
+      department: '',
+      branch: '').obs;
   
   Future<employeedetailresponse> getEmployeeDetail(String id) async {
     var uri = Uri.parse(Constant.EMPLOYEE_PROFILE_URL+"/$id");

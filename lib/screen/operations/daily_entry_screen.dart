@@ -78,14 +78,19 @@ class _DailyEntryScreenState extends State<DailyEntryScreen> {
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: Center(
-        child: Container(
-          constraints: BoxConstraints(maxWidth: 600),
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Provider.of<OperationProvider>(context, listen: false).fetchOperations();
+        },
+        child: Center(
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 600),
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Select Operation Unit", style: TextStyle(fontWeight: FontWeight.bold)),
@@ -172,10 +177,11 @@ class _DailyEntryScreenState extends State<DailyEntryScreen> {
                     ),
                   ),
                 ],
-              ),
             ),
           ),
         ),
+      ),
+      ),
       ),
     );
   }

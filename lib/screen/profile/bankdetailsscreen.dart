@@ -19,22 +19,28 @@ class BankDetailsScreen extends StatelessWidget {
         title: const Text("Bank Details", style: TextStyle(color: Colors.black)),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionTitle("Bank Account"),
-            const SizedBox(height: 20),
-            _buildBankCard(bankName, accountNumber),
-            const SizedBox(height: 30),
-            _buildSectionTitle("Bank Information"),
-            const SizedBox(height: 20),
-            _buildInfoCard([
-              _buildDetailRow(Icons.account_balance_outlined, "Bank Name", bankName),
-              _buildDetailRow(Icons.numbers_outlined, "Account Number", accountNumber),
-            ]),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Provider.of<ProfileProvider>(context, listen: false).getProfile();
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionTitle("Bank Account"),
+              const SizedBox(height: 20),
+              _buildBankCard(bankName, accountNumber),
+              const SizedBox(height: 30),
+              _buildSectionTitle("Bank Information"),
+              const SizedBox(height: 20),
+              _buildInfoCard([
+                _buildDetailRow(Icons.account_balance_outlined, "Bank Name", bankName),
+                _buildDetailRow(Icons.numbers_outlined, "Account Number", accountNumber),
+              ]),
+            ],
+          ),
         ),
       ),
     );

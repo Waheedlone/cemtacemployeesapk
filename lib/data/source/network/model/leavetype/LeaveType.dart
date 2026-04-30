@@ -21,7 +21,7 @@ class LeaveType {
             ? json['early_exit']
             : (json['early_exit'] == 1 || json['early_exit'] == '1' || json['early_exit'] == true || json['early_exit'] == 'true'),
         totalLeaveAllocated: json['total_leave_allocated']?.toString() ?? "0",
-        leaveTaken: json['leave_taken'] is int ? json['leave_taken'] : int.tryParse(json['leave_taken']?.toString() ?? "0") ?? 0);
+        leaveTaken: (double.tryParse(json['leave_taken']?.toString() ?? "0") ?? 0.0).toInt());
   }
 
   List<LeaveType> getList(List<dynamic> leaveList){

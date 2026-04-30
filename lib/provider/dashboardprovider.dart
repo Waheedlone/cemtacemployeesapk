@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:core';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cnattendance/data/source/datastore/preferences.dart';
@@ -127,7 +129,8 @@ class DashboardProvider with ChangeNotifier {
       'Content-Type': 'application/json',
       'Accept': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer $token',
-      'fcm_token': fcm ?? ""
+      'fcm_token': fcm ?? "",
+      'device_type': kIsWeb ? 'web' : (Platform.isAndroid ? 'android' : 'ios')
     };
 
     try {
@@ -150,6 +153,8 @@ class DashboardProvider with ChangeNotifier {
 
         await preferences.saveDashboardCache(response.body);
         _isUsingCache = false;
+
+        await fetchTotalAssignedLeaves(token);
 
         if (hasListeners) {
           _isLoading = false;
@@ -303,6 +308,33 @@ class DashboardProvider with ChangeNotifier {
     }
   }
 
+  Future<void> fetchTotalAssignedLeaves(String token) async {
+    try {
+      var uri = Uri.parse(Constant.LEAVE_TYPE_URL);
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'
+      };
+
+      final response = await Connect().getResponse(uri.toString(), headers);
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        final List<dynamic> leaveList = responseData['data'];
+
+        double totalAssigned = 0;
+        for (var leave in leaveList) {
+          totalAssigned += double.tryParse(leave['total_leave_allocated']?.toString() ?? "0") ?? 0;
+        }
+
+        _overviewList.update('leave', (value) => totalAssigned.toInt().toString());
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint("Error fetching total assigned leaves: $e");
+    }
+  }
+
   double calculateProdHour(int value) {
     double hour = value / 60;
     double hr = hour / Constant.TOTAL_WORKING_HOUR;
@@ -347,16 +379,17 @@ class DashboardProvider with ChangeNotifier {
     String token = await preferences.getToken();
 
     Map<String, String> headers = {
+      'Content-Type': 'application/json',
       'Accept': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer $token'
     };
 
     try {
-      final response = await Connect().postResponse(uri.toString(), headers, {
+      final response = await Connect().postResponse(uri.toString(), headers, json.encode({
         'router_bssid': await WifiInfo().info.getWifiBSSID() ?? "",
-        'check_in_latitude': locationStatus['latitude'].toString(),
-        'check_in_longitude': locationStatus['longitude'].toString(),
-      });
+        'check_in_latitude': locationStatus['latitude'],
+        'check_in_longitude': locationStatus['longitude'],
+      }));
       debugPrint(locationStatus['latitude'].toString());
       debugPrint(locationStatus['longitude'].toString());
       debugPrint(await WifiInfo().wifiBSSID() ?? "");
@@ -422,16 +455,17 @@ class DashboardProvider with ChangeNotifier {
     String token = await preferences.getToken();
 
     Map<String, String> headers = {
+      'Content-Type': 'application/json',
       'Accept': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer $token'
     };
 
     try {
-      final response = await Connect().postResponse(uri.toString(), headers, {
+      final response = await Connect().postResponse(uri.toString(), headers, json.encode({
         'router_bssid': await WifiInfo().wifiBSSID() ?? "",
-        'check_out_latitude': locationStatus['latitude'].toString(),
-        'check_out_longitude': locationStatus['longitude'].toString(),
-      });
+        'check_out_latitude': locationStatus['latitude'],
+        'check_out_longitude': locationStatus['longitude'],
+      }));
       debugPrint(response.body.toString());
 
       final responseData = json.decode(response.body);

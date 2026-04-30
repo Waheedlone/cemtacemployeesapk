@@ -1,5 +1,6 @@
-﻿import 'package:cnattendance/model/notification.dart' as model;
+import 'package:cnattendance/model/notification.dart' as model;
 import 'package:cnattendance/screen/profile/notificationdetailscreen.dart';
+import 'package:cnattendance/utils/string_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 
@@ -82,7 +83,7 @@ class NotificationCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    notification.description,
+                    StringUtils.stripHtml(notification.description),
                     style: TextStyle(color: Colors.grey[600], fontSize: 13),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

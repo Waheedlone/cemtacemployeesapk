@@ -95,8 +95,13 @@ class ChangePasswordState extends State<ChangePassword> {
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.delayed(Duration(seconds: 1));
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _form,
           child: Column(
@@ -139,6 +144,7 @@ class ChangePasswordState extends State<ChangePassword> {
             ],
           ),
         ),
+      ),
       ),
     );
   }

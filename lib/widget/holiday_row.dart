@@ -1,4 +1,5 @@
 import 'package:cnattendance/model/holiday.dart';
+import 'package:cnattendance/utils/string_utils.dart';
 import 'package:flutter/material.dart';
 
 class HolidayRow extends StatelessWidget {
@@ -48,7 +49,7 @@ class HolidayRow extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   Text(
-                    holiday.description,
+                    StringUtils.stripHtml(holiday.description),
                     style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],

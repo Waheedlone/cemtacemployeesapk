@@ -14,6 +14,7 @@ class ChangePasswordRepository{
     String token = await preferences.getToken();
 
     Map<String, String> headers = {
+      'Content-Type': 'application/json',
       'Accept': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer $token'
     };
@@ -25,7 +26,7 @@ class ChangePasswordRepository{
     };
 
     try {
-      final response = await Connect().postResponse(Constant.CHANGE_PASSWORD_API, headers, body);
+      final response = await Connect().postResponse(Constant.CHANGE_PASSWORD_API, headers, json.encode(body));
       debugPrint(response.body.toString());
 
       final responseData = json.decode(response.body);

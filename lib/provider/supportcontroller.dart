@@ -41,6 +41,7 @@ class SupportController extends GetxController {
     String token = await preferences.getToken();
 
     Map<String, String> headers = {
+      'Content-Type': 'application/json',
       'Accept': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer $token'
     };
@@ -49,11 +50,11 @@ class SupportController extends GetxController {
       EasyLoading.show(
           status: 'Submitting, Please Wait...',
           maskType: EasyLoadingMaskType.black);
-      final response = await Connect().postResponse(uri.toString(), headers, {
+      final response = await Connect().postResponse(uri.toString(), headers, json.encode({
         "subject": title,
         "description": description,
         "department_id": selected.value.id.toString()
-      });
+      }));
       debugPrint(response.body.toString());
 
       final responseData = json.decode(response.body);

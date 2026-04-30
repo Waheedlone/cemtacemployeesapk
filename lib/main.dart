@@ -110,6 +110,24 @@ void main() async {
     );
  
     FirebaseMessaging.onBackgroundMessage(_messageHandler);
+
+    // Foreground notification listener
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("FCM Foreground: Message received ${message.messageId}");
+      if (message.notification != null) {
+        NotificationService.showFromFCM(
+          title: message.notification!.title ?? 'Digital HR',
+          body: message.notification!.body ?? 'You have a new update',
+          payload: message.data.map((key, value) => MapEntry(key, value.toString())),
+        );
+      } else if (message.data.isNotEmpty) {
+        NotificationService.showFromFCM(
+          title: message.data['title'] ?? 'Digital HR',
+          body: message.data['body'] ?? message.data['message'] ?? 'You have a new update',
+          payload: message.data.map((key, value) => MapEntry(key, value.toString())),
+        );
+      }
+    });
   }
 
   // Firebase Messaging handlers disabled for web

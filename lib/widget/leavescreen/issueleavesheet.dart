@@ -25,17 +25,49 @@ class IssueLeaveSheetState extends State<IssueLeaveSheet> {
   TextEditingController startDate = TextEditingController();
   TextEditingController earlyExit = TextEditingController();
 
+  bool isHalfDay = false;
+
   void issueLeave() async {
     if (endDate.text.isNotEmpty &&
         startDate.text.isNotEmpty &&
         reason.text.isNotEmpty &&
         selectedValue != null) {
+      
+      // Reason length validation: at least 10 characters
+      if (reason.text.trim().length < 10) {
+        NavigationService().showSnackBar("Leave Error", "Reason must be at least 10 characters long");
+        return;
+      }
+
+      // Earned Leave validation: at least 3 days
+      DateTime start = DateFormat('yyyy-MM-dd').parse(startDate.text);
+      DateTime end = DateFormat('yyyy-MM-dd').parse(endDate.text);
+      int days = end.difference(start).inDays + 1;
+
+      if (selectedValue!.name.toLowerCase().contains("earned")) {
+        if (days < 3) {
+          NavigationService().showSnackBar("Leave Error", "Earned Leave must be at least 3 days");
+          return;
+        }
+      }
+
       try {
         showLoader();
         isLoading = true;
+
+        // Prepare reason: Append early exit time if available
+        String finalReason = reason.text;
+        if (earlyExit.text.isNotEmpty) {
+          finalReason = "[Early Exit at ${earlyExit.text}] " + finalReason;
+        }
+
+        // Backend expects early_exit as a boolean (1 or 0). 
+        // We send "1" if a time is picked, "0" otherwise.
         final response =
             await Provider.of<LeaveProvider>(context, listen: false).issueLeave(
-                startDate.text, endDate.text, reason.text, selectedValue!.id, earlyExit: earlyExit.text.isNotEmpty ? earlyExit.text : null);
+                startDate.text, endDate.text, finalReason, selectedValue!.id, 
+                earlyExit: earlyExit.text.isNotEmpty ? "1" : "0",
+                isHalfDay: isHalfDay ? 1 : 0);
 
         if (!mounted) {
           return;
@@ -223,26 +255,12 @@ class IssueLeaveSheetState extends State<IssueLeaveSheet> {
                       initialDate: DateTime.now(),
                       firstDate: DateTime(1950),
                       lastDate: DateTime(2100));
- 
+  
                   if (pickedDate != null) {
-                    final TimeOfDay? pickedTime = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.now(),
-                    );
- 
-                    if (pickedTime != null) {
-                      DateTime finalDateTime = DateTime(
-                        pickedDate.year,
-                        pickedDate.month,
-                        pickedDate.day,
-                        pickedTime.hour,
-                        pickedTime.minute,
-                      );
-                      setState(() {
-                        startDate.text =
-                            DateFormat('yyyy-MM-dd HH:mm:ss').format(finalDateTime);
-                      });
-                    }
+                    setState(() {
+                      startDate.text =
+                          DateFormat('yyyy-MM-dd').format(pickedDate);
+                    });
                   }
                 },
               ),
@@ -270,28 +288,28 @@ class IssueLeaveSheetState extends State<IssueLeaveSheet> {
                       initialDate: DateTime.now(),
                       firstDate: DateTime(1950),
                       lastDate: DateTime(2100));
- 
+  
                   if (pickedDate != null) {
-                    final TimeOfDay? pickedTime = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.now(),
-                    );
- 
-                    if (pickedTime != null) {
-                      DateTime finalDateTime = DateTime(
-                        pickedDate.year,
-                        pickedDate.month,
-                        pickedDate.day,
-                        pickedTime.hour,
-                        pickedTime.minute,
-                      );
-                      setState(() {
-                        endDate.text =
-                            DateFormat('yyyy-MM-dd HH:mm:ss').format(finalDateTime);
-                      });
-                    }
+                    setState(() {
+                      endDate.text =
+                          DateFormat('yyyy-MM-dd').format(pickedDate);
+                    });
                   }
                 },
+              ),
+              gaps(10),
+              CheckboxListTile(
+                title: const Text("Is Half Day?", style: TextStyle(color: Colors.black)),
+                value: isHalfDay,
+                onChanged: (bool? value) {
+                  setState(() {
+                    isHalfDay = value ?? false;
+                  });
+                },
+                controlAffinity: ListTileControlAffinity.leading,
+                contentPadding: EdgeInsets.zero,
+                activeColor: Colors.red,
+                checkColor: Colors.white,
               ),
               gaps(10),
               TextField(
@@ -337,7 +355,7 @@ class IssueLeaveSheetState extends State<IssueLeaveSheet> {
                           context: context,
                           initialTime: TimeOfDay.now(),
                         );
-
+ 
                         if (pickedTime != null) {
                           setState(() {
                             final now = DateTime.now();

@@ -115,9 +115,17 @@ class _SubstitutionScreenState extends State<SubstitutionScreen> with SingleTick
           : RefreshIndicator(
               onRefresh: _refreshData,
               child: substitutions.isEmpty
-                  ? Center(child: Text("No substitutions found"))
+                  ? ListView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          child: Center(child: Text("No substitutions found")),
+                        ),
+                      ],
+                    )
                   : ListView.builder(
-                      padding: EdgeInsets.all(16),
+                      physics: AlwaysScrollableScrollPhysics(),
                       itemCount: substitutions.length,
                       itemBuilder: (context, index) {
                         final item = substitutions[index];

@@ -70,7 +70,7 @@ class OverviewDashboard extends StatelessWidget {
       {'type': 'Present', 'value': _overview['present'] ?? '0', 'icon': Icons.business_center},
       {'type': 'Holidays', 'value': _overview['holiday'] ?? '0', 'icon': Icons.card_giftcard},
       {'type': 'Assigned Leave', 'value': _overview['leave'] ?? '0', 'icon': Icons.person_off},
-      {'type': 'Request', 'value': _overview['request'] ?? '0', 'icon': Icons.pending_actions},
+      {'type': 'Leave Request', 'value': _overview['request'] ?? '0', 'icon': Icons.pending_actions},
       {'type': 'Gate-Pass', 'value': _overview['gate_pass'] ?? '0', 'icon': Icons.local_activity},
       {'type': 'Requisitions Request', 'value': _overview['internal_requisition'] ?? '0', 'icon': Icons.assignment_late},
       {'type': 'Substitution', 'value': _overview['substitution'] ?? '0', 'icon': Icons.swap_horiz},
@@ -129,7 +129,7 @@ class OverviewDashboard extends StatelessWidget {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => HolidayScreen()));
                 } else if (overviewItems[index]['type'] == 'Present') {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => AttendanceScreen()));
-                } else if (overviewItems[index]['type'] == 'Request') {
+                } else if (overviewItems[index]['type'] == 'Leave Request') {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => LeaveScreen()));
                 } else if (overviewItems[index]['type'] == 'Gate-Pass') {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => GatePassScreen()));

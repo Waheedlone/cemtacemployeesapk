@@ -1,4 +1,5 @@
 import 'package:cnattendance/model/notification.dart' as Not;
+import 'package:cnattendance/utils/string_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 
@@ -110,7 +111,7 @@ class NotificationRow extends StatelessWidget {
                     ),
                     SizedBox(height: 5),
                     Text(
-                      notification.description,
+                      StringUtils.stripHtml(notification.description),
                       style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                   ],

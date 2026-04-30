@@ -47,18 +47,24 @@ class AboutScreenState extends State<About> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (isAboutUs) ...[
-                _buildHeroSection(),
-                _buildAboutContent(),
-              ] else ...[
-                _buildGuideHero(),
-                _buildGuideContent(),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await Future.delayed(Duration(seconds: 1));
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (isAboutUs) ...[
+                  _buildHeroSection(),
+                  _buildAboutContent(),
+                ] else ...[
+                  _buildGuideHero(),
+                  _buildGuideContent(),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
