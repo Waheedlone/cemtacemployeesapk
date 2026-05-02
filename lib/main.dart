@@ -23,6 +23,7 @@ import 'package:cnattendance/provider/prefprovider.dart';
 import 'package:cnattendance/provider/profileprovider.dart';
 import 'package:cnattendance/provider/shiftrosterprovider.dart';
 import 'package:cnattendance/provider/substitutionprovider.dart';
+import 'package:cnattendance/provider/purchase_requisition_provider.dart';
 import 'package:cnattendance/screen/auth/login_screen.dart';
 import 'package:cnattendance/screen/dashboard/dashboard_screen.dart';
 import 'package:cnattendance/screen/profile/editprofilescreen.dart';
@@ -250,6 +251,9 @@ class MyApp extends StatelessWidget {
           ),
           ChangeNotifierProvider(
             create: (ctx) => InternalRequisitionProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (ctx) => PurchaseRequisitionProvider(),
           ),
           ChangeNotifierProvider(
             create: (ctx) => ShiftHandoverProvider(),

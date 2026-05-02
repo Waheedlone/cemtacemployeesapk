@@ -40,9 +40,9 @@ class InternalRequisition {
         : [];
 
     return InternalRequisition(
-      id: json['id'] ?? 0,
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
       requestNo: json['ir_number'] ?? json['request_no'] ?? '',
-      requestedById: json['requested_by_id'] ?? 0,
+      requestedById: json['requested_by_id'] is int ? json['requested_by_id'] : int.tryParse(json['requested_by_id']?.toString() ?? '') ?? 0,
       requestedByName: json['section_head_name'] ?? json['requested_by_name'] ?? '',
       department: json['department_name'] ?? json['department'] ?? '',
       requestDate: json['requisition_date'] ?? json['request_date'] ?? '',
@@ -74,9 +74,9 @@ class RequisitionItem {
 
   factory RequisitionItem.fromJson(Map<String, dynamic> json) {
     return RequisitionItem(
-      itemId: json['id'] ?? json['item_id'] ?? 0,
+      itemId: json['id'] is int ? json['id'] : int.tryParse((json['id'] ?? json['item_id']).toString()) ?? 0,
       itemName: json['description'] ?? json['item_name'] ?? json['material_name'] ?? '',
-      quantity: (json['quantity'] ?? 0).toInt(),
+      quantity: json['quantity'] is num ? (json['quantity'] as num).toInt() : (double.tryParse(json['quantity']?.toString() ?? '0')?.toInt() ?? 0),
       unit: json['unit'] ?? '',
     );
   }

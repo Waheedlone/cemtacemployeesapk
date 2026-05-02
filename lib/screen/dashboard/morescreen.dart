@@ -67,7 +67,7 @@ class MoreScreen extends StatelessWidget {
                     //                  Services('Daily Site Entry', Icons.edit_note, DailyEntryScreen()),
                     //                  Services('Operations History', Icons.history, OperationsHistoryScreen()),
                     Services('Leave Confirmation', Icons.rule, LeaveConfirmationScreen()),
-                    Services('Requisition', Icons.account_balance_outlined, InternalRequisitionListScreen()),
+                    Services('IMS (Inventory)', Icons.account_balance_outlined, InternalRequisitionListScreen()),
                     Services('Substitute', Icons.time_to_leave_outlined, SubstitutionScreen()),
                     Services('Gate Pass', Icons.account_balance_wallet_outlined, GatePassScreen()),
                     Services('Shift Handover', Icons.sync_alt, ShiftHandoverScreen()),

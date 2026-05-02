@@ -1,3 +1,4 @@
+import 'package:cnattendance/data/source/datastore/preferences.dart';
 import 'package:cnattendance/model/internal_requisition.dart';
 import 'package:cnattendance/provider/internal_requisition_provider.dart';
 import 'package:cnattendance/utils/constant.dart';
@@ -18,6 +19,7 @@ class _InternalRequisitionDetailScreenState extends State<InternalRequisitionDet
   InternalRequisition? _requisition;
   bool _isLoading = true;
   final TextEditingController _remarksController = TextEditingController();
+  int _currentUserId = 0;
 
   @override
   void initState() {
@@ -36,8 +38,10 @@ class _InternalRequisitionDetailScreenState extends State<InternalRequisitionDet
       final requisition = await Provider.of<InternalRequisitionProvider>(context, listen: false)
           .fetchRequisitionDetail(widget.id);
       if (mounted) {
+        final userId = await Preferences().getUserId();
         setState(() {
           _requisition = requisition;
+          _currentUserId = userId;
           _isLoading = false;
         });
       }
@@ -97,13 +101,19 @@ class _InternalRequisitionDetailScreenState extends State<InternalRequisitionDet
                               _buildDivider(),
                               _buildDetailRow("Requester", _requisition!.requestedByName),
                               _buildDivider(),
-                              _buildDetailRow("Request Date", _requisition!.requestDate),
-                              _buildDivider(),
-                              _buildDetailRow("Priority", _requisition!.priority.toUpperCase(),
-                                  statusTextColor: _getPriorityColor(_requisition!.priority)),
-                              _buildDivider(),
-                              _buildDetailRow("Status", _requisition!.status.toUpperCase(), 
-                                  statusTextColor: _getStatusColor(_requisition!.status)),
+                                _buildDetailRow("Request Date", _requisition!.requestDate),
+                                _buildDivider(),
+                                _buildDetailRow("Warehouse", _requisition!.warehouseName ?? 'N/A'),
+                                if (_requisition!.specialRequestReason != null && _requisition!.specialRequestReason!.isNotEmpty) ...[
+                                  _buildDivider(),
+                                  _buildDetailRow("Special Reason", _requisition!.specialRequestReason!),
+                                ],
+                                _buildDivider(),
+                                _buildDetailRow("Priority", _requisition!.priority.toUpperCase(),
+                                    statusTextColor: _getPriorityColor(_requisition!.priority)),
+                                _buildDivider(),
+                                _buildDetailRow("Status", _requisition!.status.toUpperCase(), 
+                                    statusTextColor: _getStatusColor(_requisition!.status)),
                             ],
                           ),
                         ),
@@ -219,7 +229,7 @@ class _InternalRequisitionDetailScreenState extends State<InternalRequisitionDet
                     ),
                   ),
                 ),
-      bottomNavigationBar: _isLoading || _requisition == null || _requisition!.status.toLowerCase() != 'pending'
+      bottomNavigationBar: _isLoading || _requisition == null || _requisition!.status.toLowerCase() != 'pending' || _requisition!.requestedById == _currentUserId
           ? null 
           : Container(
               padding: EdgeInsets.fromLTRB(16, 12, 16, MediaQuery.of(context).padding.bottom + 12),

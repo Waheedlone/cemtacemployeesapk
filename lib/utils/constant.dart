@@ -78,6 +78,11 @@ class Constant {
   static const INTERNAL_REQUISITIONS_REJECT = "$API_URL/internal-requisitions"; // /{id}/reject
   static const INTERNAL_REQUISITIONS_DETAIL_URL = "$API_URL/internal-requisitions/for-approval"; // /{id}
   static const INTERNAL_REQUISITIONS_APPROVE_ALL_URL = "$API_URL/internal-requisitions"; // /{id}/approve
+  static const INTERNAL_REQUISITIONS_URL = "$API_URL/internal-requisitions";
+  static const INTERNAL_REQUISITIONS_STORE_URL = "$API_URL/internal-requisitions/store";
+  static const IMS_MATERIALS_URL = "$API_URL/ims/materials";
+  static const IMS_WAREHOUSES_URL = "$API_URL/ims/warehouses";
+  static const IMS_STOCK_SUMMARY_URL = "$API_URL/ims/stock-summary";
   
   static const SHIFT_ROSTER_URL = "$API_URL/employees/shift-roster";
 

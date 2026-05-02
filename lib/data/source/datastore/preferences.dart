@@ -100,6 +100,11 @@ class Preferences with ChangeNotifier {
     return prefs.getString(USER_TOKEN) ?? "";
   }
 
+  Future<int> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(USER_ID) ?? 0;
+  }
+
   Future<bool> getUserAuth() async {
     final prefs = await SharedPreferences.getInstance();
 
