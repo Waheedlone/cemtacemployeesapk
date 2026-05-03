@@ -163,7 +163,7 @@ class _InternalRequisitionListScreenState
       date: requisition.requisitionDate,
       status: requisition.status,
       extra: 'Level: ${requisition.currentLevel.replaceAll('_', ' ')}',
-      color: Colors.blue[600],
+      color: Color(0xFFED1C24),
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => PurchaseRequisitionDetailScreen(id: requisition.id)))
             .then((_) => _refreshData());

@@ -13,6 +13,7 @@ class PurchaseRequisitionProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future<void> fetchForApproval() async {
+    debugPrint("Fetching PRs for approval...");
     _isLoading = true;
     notifyListeners();
 
@@ -29,15 +30,30 @@ class PurchaseRequisitionProvider with ChangeNotifier {
       final response = await Connect().getResponse(
           "${Constant.API_URL}/purchase-requisitions/for-approval", headers);
 
+      debugPrint("PR Approval API Status: ${response.statusCode}");
+      debugPrint("PR Approval API Body: ${response.body}");
+
       final responseData = json.decode(response.body);
 
       if (response.statusCode == 200) {
         final data = responseData['data'];
-        if (data != null && data['data'] is List) {
-          _requisitions = (data['data'] as List)
-              .map((item) => PurchaseRequisition.fromJson(item))
-              .toList();
+        if (data != null) {
+          if (data is Map && data['data'] is List) {
+            final list = data['data'] as List;
+            debugPrint("Found ${list.length} PRs in response");
+            _requisitions = list
+                .map((item) => PurchaseRequisition.fromJson(item))
+                .toList();
+          } else if (data is List) {
+            debugPrint("Found ${data.length} PRs in response (direct list)");
+            _requisitions =
+                data.map((item) => PurchaseRequisition.fromJson(item)).toList();
+          } else {
+            debugPrint("Data field is neither Map nor List: ${data.runtimeType}");
+            _requisitions = [];
+          }
         } else {
+          debugPrint("Data field is null in response");
           _requisitions = [];
         }
       } else {

@@ -38,7 +38,12 @@ class _PurchaseRequisitionDetailScreenState extends State<PurchaseRequisitionDet
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Unable to load requisition details. Please try again later.'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
       }
     }
   }
@@ -72,9 +77,42 @@ class _PurchaseRequisitionDetailScreenState extends State<PurchaseRequisitionDet
                     ],
                   ),
                 ),
-      bottomNavigationBar: _requisition?.canApprove == true
-          ? _buildActionButtons()
-          : null,
+      bottomNavigationBar: _requisition == null
+          ? null
+          : _requisition!.canApprove
+              ? (_requisition!.currentLevel.toLowerCase() == 'purchase'
+                  ? _buildPurchaseWarning()
+                  : _buildActionButtons())
+              : null,
+    );
+  }
+
+  Widget _buildPurchaseWarning() {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.info_outline, color: Color(0xFFED1C24), size: 32),
+          SizedBox(height: 12),
+          Text(
+            "Action Required on Dashboard",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFFED1C24)),
+          ),
+          SizedBox(height: 8),
+          Text(
+            "Please login from dashboard because you have to Generate the QO, PO, SO, GEN etc. Your role is not able to do action from Application at this stage.",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey[800], fontSize: 13, height: 1.4),
+          ),
+          SizedBox(height: 16),
+        ],
+      ),
     );
   }
 
@@ -83,7 +121,7 @@ class _PurchaseRequisitionDetailScreenState extends State<PurchaseRequisitionDet
       width: double.infinity,
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [Colors.blue[700]!, Colors.blue[900]!]),
+        color: Color(0xFFED1C24),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -133,7 +171,7 @@ class _PurchaseRequisitionDetailScreenState extends State<PurchaseRequisitionDet
                 Text(item.materialCode, style: TextStyle(fontSize: 12, color: Colors.grey)),
               ],
             )),
-            Text('${item.quantity} ${item.unit}', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+            Text('${item.quantity} ${item.unit}', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFED1C24))),
           ],
         ),
       )).toList(),
@@ -159,7 +197,7 @@ class _PurchaseRequisitionDetailScreenState extends State<PurchaseRequisitionDet
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('${h.actionBy} (${h.level.replaceAll('_', ' ')})', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                Text(h.action.toUpperCase(), style: TextStyle(color: Colors.blue, fontSize: 11, fontWeight: FontWeight.bold)),
+                Text(h.action.toUpperCase(), style: TextStyle(color: Color(0xFFED1C24), fontSize: 11, fontWeight: FontWeight.bold)),
                 if (h.remarks != null) Text(h.remarks!, style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
                 Text(h.date, style: TextStyle(fontSize: 10, color: Colors.grey)),
               ],
@@ -178,7 +216,7 @@ class _PurchaseRequisitionDetailScreenState extends State<PurchaseRequisitionDet
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [Icon(icon, size: 18, color: Colors.blue), SizedBox(width: 8), Text(title, style: TextStyle(fontWeight: FontWeight.bold))]),
+          Row(children: [Icon(icon, size: 18, color: Color(0xFFED1C24)), SizedBox(width: 8), Text(title, style: TextStyle(fontWeight: FontWeight.bold))]),
           Divider(height: 24),
           ...children,
         ],

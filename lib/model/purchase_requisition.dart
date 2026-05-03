@@ -43,20 +43,20 @@ class PurchaseRequisition {
         : [];
 
     return PurchaseRequisition(
-      id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
-      prNumber: json['pr_number'] ?? '',
-      requisitionDate: json['requisition_date'] ?? '',
-      status: json['status'] ?? '',
-      currentLevel: json['current_level'] ?? '',
-      requestedById: json['requested_by_id'] is int ? json['requested_by_id'] : int.tryParse(json['requested_by_id']?.toString() ?? '') ?? 0,
-      requestedBy: json['requested_by'] ?? '',
-      warehouse: json['warehouse'],
-      department: json['department'],
-      purpose: json['purpose'],
-      remarks: json['remarks'],
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      prNumber: json['pr_number']?.toString() ?? '',
+      requisitionDate: json['requisition_date']?.toString() ?? '',
+      status: json['status']?.toString() ?? '',
+      currentLevel: json['current_level']?.toString() ?? '',
+      requestedById: json['requested_by_id'] is int ? json['requested_by_id'] : int.tryParse(json['requested_by_id']?.toString() ?? '0') ?? 0,
+      requestedBy: json['requested_by']?.toString() ?? '',
+      warehouse: json['warehouse']?.toString(),
+      department: json['department']?.toString(),
+      purpose: json['purpose']?.toString(),
+      remarks: json['remarks']?.toString(),
       items: items,
       history: history,
-      canApprove: json['can_approve'] ?? false,
+      canApprove: json['can_approve'] == true || json['can_approve'] == 1,
     );
   }
 }
